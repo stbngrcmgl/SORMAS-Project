@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -91,6 +92,7 @@ import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -1030,8 +1032,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto cazePerson = creator.createPerson("Foo", "Bar").toReference();
-		CaseDataDto caze =
-				creator.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator
+			.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
 		caze.getSymptoms().setChestPain(SymptomState.YES);
 
 		// Add a new visit to the case
@@ -1209,4 +1211,31 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 //
 //		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
 //	}
+
+	@Test
+	public void testFollowupVisitOrdering() {
+		RDCF rdcf = creator.createRDCF();
+		CaseDataDto caze = creator.createCase(
+			creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(),
+			creator.createPerson().toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.NOT_CLASSIFIED,
+			InvestigationStatus.PENDING,
+			null,
+			rdcf);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY, 11);
+
+		creator.createVisit(Disease.CORONAVIRUS, caze.getPerson(), calendar.getTime(), VisitStatus.UNAVAILABLE);
+
+		calendar.set(Calendar.HOUR_OF_DAY, 10);
+		creator.createVisit(Disease.CORONAVIRUS, caze.getPerson(), calendar.getTime(), VisitStatus.COOPERATIVE);
+
+		List<CaseFollowUpDto> followupList = getCaseFacade().getCaseFollowUpList(new CaseCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
+
+		assertThat(followupList, hasSize(1));
+		VisitResult[] visitResults = followupList.get(0).getVisitResults();
+		assertThat(visitResults[visitResults.length - 1], is(VisitResult.UNAVAILABLE));
+	}
 }

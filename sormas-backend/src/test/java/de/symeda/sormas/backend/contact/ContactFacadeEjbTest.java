@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -83,6 +85,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
@@ -835,5 +838,29 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
 		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));
+	}
+
+	@Test
+	public void testFollowupVisitOrdering() {
+		RDCF rdcf = creator.createRDCF();
+		ContactDto contact = creator.createContact(
+			creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(),
+			creator.createPerson().toReference(),
+			Disease.CORONAVIRUS);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY, 11);
+
+		creator.createVisit(Disease.CORONAVIRUS, contact.getPerson(), calendar.getTime(), VisitStatus.COOPERATIVE);
+
+		calendar.set(Calendar.HOUR_OF_DAY, 10);
+		creator.createVisit(Disease.CORONAVIRUS, contact.getPerson(), calendar.getTime(), VisitStatus.UNAVAILABLE);
+
+		List<ContactFollowUpDto> followupList =
+			getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
+
+		assertThat(followupList, hasSize(1));
+		VisitResult[] visitResults = followupList.get(0).getVisitResults();
+		assertThat(visitResults[visitResults.length - 1], is(VisitResult.NOT_SYMPTOMATIC));
 	}
 }
