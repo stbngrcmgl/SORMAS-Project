@@ -42,7 +42,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 				CaseIndexDetailedDto.HOUSE_NUMBER,
 				CaseIndexDetailedDto.ADDITIONAL_INFORMATION,
 				CaseIndexDetailedDto.POSTAL_CODE,
-				CaseIndexDetailedDto.PHONE));
+				CaseIndexDetailedDto.PHONE_NUMBERS));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,7 +58,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 		getColumn(CaseIndexDetailedDto.HOUSE_NUMBER).setWidth(50);
 		getColumn(CaseIndexDetailedDto.ADDITIONAL_INFORMATION).setWidth(200);
 		getColumn(CaseIndexDetailedDto.POSTAL_CODE).setWidth(100);
-		getColumn(CaseIndexDetailedDto.PHONE).setWidth(100);
+		getColumn(CaseIndexDetailedDto.PHONE_NUMBERS).setWidth(100);
 
 		((Column<CaseIndexDetailedDto, AgeAndBirthDateDto>) getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE)).setRenderer(
 			value -> value == null

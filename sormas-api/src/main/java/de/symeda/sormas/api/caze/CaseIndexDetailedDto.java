@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -12,6 +13,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
 import java.util.Date;
+import java.util.List;
 
 public class CaseIndexDetailedDto extends CaseIndexDto {
 
@@ -23,7 +25,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String POSTAL_CODE = "postalCode";
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
-	public static final String PHONE = "phone";
+	public static final String PHONE_NUMBERS = "phoneNumbers";
 	public static final String REPORTING_USER = "reportingUser";
 
 	@PersonalData
@@ -42,8 +44,8 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
-	@SensitiveData
-	private String phone;
+	@PersonalData
+	private String phoneNumbers;
 
 	private UserReferenceDto reportingUser;
 
@@ -56,7 +58,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
-								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
+								String city, String street, String houseNumber, String additionalInformation, String postalCode, List<String> phoneNumbers,
 								String reportingUserFirstName, String reportingUserLastName, int visitCount) {
 
 		super(id, uuid, epidNumber, externalID, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
@@ -71,7 +73,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
-		this.phone = phone;
+		this.phoneNumbers = PersonHelper.buildPhoneString(phoneNumbers, null);
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 	}
 
@@ -95,8 +97,8 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		return postalCode;
 	}
 
-	public String getPhone() {
-		return phone;
+	public String getPhoneNumbers() {
+		return phoneNumbers;
 	}
 
 	public UserReferenceDto getReportingUser() {

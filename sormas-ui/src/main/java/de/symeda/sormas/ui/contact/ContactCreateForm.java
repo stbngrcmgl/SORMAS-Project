@@ -17,14 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-
-import java.time.Month;
-import java.util.Arrays;
-
-import org.joda.time.LocalDate;
-
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -40,7 +32,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -64,6 +55,13 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import org.joda.time.LocalDate;
+
+import java.time.Month;
+import java.util.Arrays;
+
+import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
@@ -72,6 +70,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String CASE_INFO_LOC = "caseInfoLoc";
 	private static final String CHOOSE_CASE_LOC = "chooseCaseLoc";
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
+	private static final String PHONE_NUMBER_LOC = "phoneNumberLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -79,7 +78,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 							fluidRowLocs(PersonDto.SEX)) +
 					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
-					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
+					LayoutUtil.fluidRowLocs(PHONE_NUMBER_LOC, PersonDto.EMAIL_ADDRESS) +
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
 					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
@@ -132,8 +131,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
-		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
-		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
+		TextField phone = addCustomField(PHONE_NUMBER_LOC, String.class, TextField.class);
+		phone.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE_NUMBER));
 		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
 		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
@@ -401,7 +400,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	}
 
 	public String getPhone() {
-		return (String) getField(PersonDto.PHONE).getValue();
+		return (String) getField(PHONE_NUMBER_LOC).getValue();
 	}
 
 	public String getEmailAddress() {

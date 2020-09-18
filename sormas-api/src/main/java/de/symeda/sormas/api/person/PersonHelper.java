@@ -17,18 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
-import java.text.Normalizer;
-import java.util.Date;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.simmetrics.metrics.StringMetrics;
-
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.simmetrics.metrics.StringMetrics;
+
+import java.text.Normalizer;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public final class PersonHelper {
 
@@ -132,18 +133,25 @@ public final class PersonHelper {
 		return result.toString();
 	}
 
-	public static String buildPhoneString(String phone, String phoneOwner) {
+	public static String buildPhoneString(List<String> phoneNumbers, String phoneOwner) {
 
 		StringBuilder result = new StringBuilder();
-		if (!DataHelper.isNullOrEmpty(phone)) {
-			result.append(phone);
+		if (CollectionUtils.isNotEmpty(phoneNumbers)) {
+			for (int i = 0; i < phoneNumbers.size(); i++) {
+				result.append(phoneNumbers.get(i));
+				if (i < phoneNumbers.size() - 1) {
+					result.append(", ");
+				}
+			}
 		}
-		if (!DataHelper.isNullOrEmpty(phoneOwner)) {
+
+		if (StringUtils.isNotBlank(phoneOwner)) {
 			if (result.length() > 0) {
 				result.append(" - ");
 			}
 			result.append(phoneOwner);
 		}
+
 		return result.toString();
 	}
 

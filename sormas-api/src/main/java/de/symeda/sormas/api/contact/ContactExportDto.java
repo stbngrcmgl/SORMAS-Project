@@ -39,6 +39,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCod
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class ContactExportDto implements Serializable {
 
@@ -93,8 +94,8 @@ public class ContactExportDto implements Serializable {
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
-	@SensitiveData
-	private String phone;
+	@PersonalData
+	private String phoneNumbers;
 	private String occupationType;
 	private int numberOfVisits;
 	private YesNoUnknown lastCooperativeVisitSymptomatic;
@@ -139,7 +140,7 @@ public class ContactExportDto implements Serializable {
 							boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String city, String street, String houseNumber, String additionalInformation, String postalCode,
-							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
+							List<String> phoneNumbers, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
@@ -192,7 +193,7 @@ public class ContactExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
-		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
+		this.phoneNumbers = PersonHelper.buildPhoneString(phoneNumbers, phoneOwner);
 		this.occupationType = PersonHelper.buildOccupationString(
 			occupationType,
 			occupationDetails,
@@ -478,8 +479,8 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(49)
-	public String getPhone() {
-		return phone;
+	public String getPhoneNumbers() {
+		return phoneNumbers;
 	}
 
 	@Order(50)
@@ -657,8 +658,8 @@ public class ContactExportDto implements Serializable {
 		this.deathDate = deathDate;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setPhoneNumbers(String phoneNumbers) {
+		this.phoneNumbers = phoneNumbers;
 	}
 
 	public void setOccupationType(String occupationType) {

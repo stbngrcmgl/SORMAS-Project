@@ -17,8 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import java.util.Date;
-import java.util.List;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.user.User;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -30,15 +36,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.user.User;
+import java.util.Date;
+import java.util.List;
 
 @Stateless
 @LocalBean
@@ -151,10 +150,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			for (int i = 0; i < textFilters.length; i++) {
 				String textFilter = formatForLike(textFilters[i]);
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
-						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter));
+					Predicate likeFilters = cb
+						.or(cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter), cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter)
+						//,phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter)
+						);
 					filter = and(cb, filter, likeFilters);
 				}
 			}

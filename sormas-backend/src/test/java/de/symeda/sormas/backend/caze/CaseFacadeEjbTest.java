@@ -17,30 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -103,6 +79,29 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class CaseFacadeEjbTest extends AbstractBeanTest {
 
@@ -346,7 +345,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson("FirstName1", "LastName1", p -> {
 			p.getAddress().setPostalCode("10115");
 			p.getAddress().setCity("Berlin");
-			p.setPhone("+4930-90-1820");
+			p.getPhoneNumbers().add("+4930-90-1820");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -360,7 +359,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson("FirstName2", "LastName2", p -> {
 			p.getAddress().setPostalCode("20095");
 			p.getAddress().setCity("Hamburg");
-			p.setPhone("+49-30-901822");
+			p.getPhoneNumbers().add("+49-30-901822");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -374,7 +373,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person3 = creator.createPerson("FirstName3", "LastName3", p -> {
 			p.getAddress().setPostalCode("80331");
 			p.getAddress().setCity("Munich");
-			p.setPhone("+49 31 9018 20");
+			p.getPhoneNumbers().add("+49 31 9018 20");
 		});
 		creator.createCase(
 			user.toReference(),
@@ -1009,7 +1008,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 4.7 Visits;
 		List<String> mergedVisits = getVisitFacade().getIndexList(new VisitCriteria().caze(mergedCase.toReference()), null, null, null)
-				.stream().map(VisitIndexDto::getUuid).collect(Collectors.toList());
+			.stream()
+			.map(VisitIndexDto::getUuid)
+			.collect(Collectors.toList());
 		assertEquals(2, mergedVisits.size());
 		assertTrue(mergedVisits.contains(leadVisit.getUuid()));
 		assertTrue(mergedVisits.contains(otherVisit.getUuid()));
@@ -1050,8 +1051,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto cazePerson = creator.createPerson("Foo", "Bar").toReference();
-		CaseDataDto caze =
-				creator.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator
+			.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
 		caze.getSymptoms().setChestPain(SymptomState.YES);
 
 		// Add a new visit to the case

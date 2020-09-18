@@ -17,7 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -54,12 +59,14 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Month;
@@ -88,6 +95,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String ADDRESS_HEADER = "addressHeader";
 	private static final String ADDRESSES_HEADER = "addressesHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
+	private static final String PHONE_NUMBERS_LOC = "phoneNumbersLoc";
 
 	private Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
 	private Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
@@ -157,8 +165,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             VSPACE_3,
                             fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
                                     fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-                                    fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
-                                    fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+                                    fluidRowLocs(PHONE_NUMBERS_LOC) +
+									fluidRowLocs(PersonDto.PHONE_OWNER, PersonDto.EMAIL_ADDRESS) +
                                     loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 	//@formatter:on
 
@@ -256,7 +264,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.OCCUPATION_DETAILS,
 			PersonDto.EDUCATION_TYPE,
 			PersonDto.EDUCATION_DETAILS,
-			PersonDto.PHONE,
 			PersonDto.PHONE_OWNER,
 			PersonDto.EMAIL_ADDRESS,
 			PersonDto.PASSPORT_NUMBER,
@@ -820,4 +827,63 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			burialPlaceDesc.setValue(getValue().getAddress().toString());
 		}
 	}
+
+	@Override
+	public void setValue(PersonDto person) throws ReadOnlyException, Converter.ConversionException {
+		VerticalLayout phoneNumbersLayout = new VerticalLayout();
+		phoneNumbersLayout.setMargin(false);
+		phoneNumbersLayout.setSpacing(false);
+
+		if (CollectionUtils.isNotEmpty(person.getPhoneNumbers())) {
+			for (int i = 0; i < person.getPhoneNumbers().size(); i++) {
+				phoneNumbersLayout.addComponent(createPhoneNumberLayout(phoneNumbersLayout, person, person.getPhoneNumbers().get(i), i));
+			}
+		} else {
+			TextField tfPhoneNumber = createCustomField("PHONE_NUMBER_0", String.class, TextField.class);
+			tfPhoneNumber.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE_NUMBER) + " 1");
+			tfPhoneNumber.setWidth(100, Unit.PERCENTAGE);
+			phoneNumbersLayout.addComponent(tfPhoneNumber);
+		}
+
+		Button btnAddPhoneNumber = ButtonHelper.createButton(I18nProperties.getCaption(Captions.personAddPhoneNumber), e -> {
+			phoneNumbersLayout.addComponent(
+				createPhoneNumberLayout(phoneNumbersLayout, person, null, person.getPhoneNumbers().size()),
+				phoneNumbersLayout.getComponentCount() - 1);
+		});
+		CssStyles.style(btnAddPhoneNumber, CssStyles.VSPACE_3);
+		phoneNumbersLayout.addComponent(btnAddPhoneNumber);
+
+		getContent().addComponent(phoneNumbersLayout, PHONE_NUMBERS_LOC);
+
+		super.setValue(person);
+	}
+
+	private HorizontalLayout createPhoneNumberLayout(VerticalLayout phoneNumbersLayout, PersonDto person, String phoneNumber, int index) {
+		final HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(false);
+		layout.setWidth(100, Unit.PERCENTAGE);
+		TextField tfPhoneNumber = createCustomField("PHONE_NUMBER_" + index, String.class, TextField.class);
+		tfPhoneNumber.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE_NUMBER) + " " + (index + 1));
+		tfPhoneNumber.setWidth(100, Unit.PERCENTAGE);
+
+		final String newPhoneNumber = phoneNumber != null ? phoneNumber : "";
+		if (phoneNumber == null) {
+			person.getPhoneNumbers().add(newPhoneNumber);
+		}
+		tfPhoneNumber.setValue(newPhoneNumber);
+
+		layout.addComponent(tfPhoneNumber);
+
+		if (index > 0) {
+			Button btnDelete = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> {
+				getValue().getPhoneNumbers().remove(newPhoneNumber);
+				phoneNumbersLayout.removeComponent(layout);
+			}, CssStyles.FORCE_CAPTION);
+			layout.addComponent(btnDelete);
+			layout.setExpandRatio(tfPhoneNumber, 1);
+		}
+
+		return layout;
+	}
+
 }

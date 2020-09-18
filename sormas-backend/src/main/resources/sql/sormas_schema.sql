@@ -5283,9 +5283,9 @@ end;
 $$ language plpgsql immutable;
 
 INSERT INTO schema_version (version_number, comment) VALUES (251, 'Campaign dashboard element #2527');
-                                                                                                                                          
+
 -- 2020-09-14 Add person_locations table and remove person reference from locations #2746
-                                                                                                                                          
+
 CREATE TABLE person_locations(
 	person_id bigint NOT NULL,
 	location_id bigint NOT NULL,
@@ -5307,5 +5307,16 @@ INSERT INTO person_locations (person_id, location_id) SELECT l.person_id, l.id F
 ALTER TABLE location DROP COLUMN person_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (252, 'Add person_locations table and remove person reference from locations #2746');
+
+-- 2020-09-18 Replace single phone number with a list of phone numbers for persons #2744
+ALTER TABLE person ADD COLUMN phonenumbers json;
+ALTER TABLE person_history ADD COLUMN phonenumbers json;
+
+UPDATE person SET phonenumbers = cast('["' || phone || '"]' AS json) WHERE phone IS NOT NULL;
+
+ALTER TABLE person DROP COLUMN phone;
+ALTER TABLE person_history DROP COLUMN phone;
+
+INSERT INTO schema_version (version_number, comment) VALUES (253, 'Replace single phone number with a list of phone numbers for persons #2744');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -1,17 +1,19 @@
 package de.symeda.sormas.api.contact;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+
+import java.util.Date;
+import java.util.List;
 
 public class ContactIndexDetailedDto extends ContactIndexDto {
 
@@ -23,7 +25,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	public static final String CITY = "city";
 	public static final String ADDRESS = "address";
 	public static final String POSTAL_CODE = "postalCode";
-	public static final String PHONE = "phone";
+	public static final String PHONE_NUMBERS = "phoneNumbers";
 	public static final String REPORTING_USER = "reportingUser";
 
 	private Sex sex;
@@ -39,8 +41,8 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
-	@SensitiveData
-	private String phone;
+	@PersonalData
+	private String phoneNumbers;
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
@@ -53,7 +55,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
 								   String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
-								   String districtName, String city, String street, String houseNumber, String postalCode, String phone,
+								   String districtName, String city, String street, String houseNumber, String postalCode, List<String> phoneNumbers,
 								   String reportingUserFirstName, String reportingUserLastName,
 								   int visitCount) {
 	//@formatter:on
@@ -71,7 +73,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.city = city;
 		this.address = LocationDto.buildStreetAndHouseNumberCaption(street, houseNumber);
 		this.postalCode = postalCode;
-		this.phone = phone;
+		this.phoneNumbers = PersonHelper.buildPhoneString(phoneNumbers, null);
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 	}
 
@@ -99,8 +101,8 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		return postalCode;
 	}
 
-	public String getPhone() {
-		return phone;
+	public String getPhoneNumbers() {
+		return phoneNumbers;
 	}
 
 	public UserReferenceDto getReportingUser() {

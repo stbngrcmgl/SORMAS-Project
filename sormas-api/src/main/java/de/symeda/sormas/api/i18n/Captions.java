@@ -1045,7 +1045,7 @@ public interface Captions {
 	String Person_occupationType = "Person.occupationType";
 	String Person_other_occupationDetails = "Person.other.occupationDetails";
 	String Person_passportNumber = "Person.passportNumber";
-	String Person_phone = "Person.phone";
+	String Person_phoneNumber = "Person.phoneNumber";
 	String Person_phoneOwner = "Person.phoneOwner";
 	String Person_placeOfBirthCommunity = "Person.placeOfBirthCommunity";
 	String Person_placeOfBirthDistrict = "Person.placeOfBirthDistrict";
@@ -1057,6 +1057,7 @@ public interface Captions {
 	String Person_sex = "Person.sex";
 	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
 	String Person_uuid = "Person.uuid";
+	String personAddPhoneNumber = "personAddPhoneNumber";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";

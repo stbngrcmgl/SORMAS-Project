@@ -17,10 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.PseudonymizableDto;
@@ -39,6 +35,10 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class PersonDto extends PseudonymizableDto {
 
@@ -74,7 +74,8 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
 
-	public static final String PHONE = "phone";
+	public static final String PHONE_NUMBER = "phoneNumber";
+	public static final String PHONE_NUMBERS = "phoneNumbers";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String ADDRESS = "address";
 
@@ -234,14 +235,14 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private BurialConductor burialConductor;
-	@SensitiveData
-	private String phone;
-	@SensitiveData
+	@PersonalData
+	private List<String> phoneNumbers = new ArrayList<>();
+	@PersonalData
 	private String phoneOwner;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	private LocationDto address;
-	@SensitiveData
+	@PersonalData
 	private String emailAddress;
 
 	private EducationType educationType;
@@ -263,9 +264,9 @@ public class PersonDto extends PseudonymizableDto {
 	private String occupationFacilityDetails;
 	@SensitiveData
 	private String generalPractitionerDetails;
-	@SensitiveData
+	@PersonalData
 	private String passportNumber;
-	@SensitiveData
+	@PersonalData
 	private String nationalHealthId;
 	private List<LocationDto> addresses = new ArrayList<>();
 
@@ -414,12 +415,12 @@ public class PersonDto extends PseudonymizableDto {
 		this.deathDate = deathDate;
 	}
 
-	public String getPhone() {
-		return phone;
+	public List<String> getPhoneNumbers() {
+		return phoneNumbers;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setPhoneNumbers(List<String> phoneNumbers) {
+		this.phoneNumbers = phoneNumbers;
 	}
 
 	public String getPhoneOwner() {

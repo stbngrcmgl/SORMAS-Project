@@ -17,22 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -46,6 +30,21 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -226,7 +225,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, p -> {
 			p.setAddress(address);
 
-			p.setPhone("1234567");
+			p.getPhoneNumbers().add("1234567");
 			p.setPresentCondition(PresentCondition.DEAD);
 			p.setCauseOfDeathDetails("Test cause of death details");
 			p.setPassportNumber("Test passport num");
@@ -311,7 +310,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getLatLonAccuracy(), is(10F));
 
 		// sensitive data
-		assertThat(person.getPhone(), is("1234567"));
+		assertThat(person.getPhoneNumbers().get(0), is("1234567"));
 		assertThat(person.getCauseOfDeathDetails(), is("Test cause of death details"));
 		assertThat(person.getPassportNumber(), is("Test passport num"));
 	}
@@ -338,7 +337,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getLatLonAccuracy(), is(10F));
 
 		// sensitive data
-		assertThat(person.getPhone(), isEmptyString());
+		assertThat(person.getPhoneNumbers().get(0), isEmptyString());
 		assertThat(person.getCauseOfDeathDetails(), isEmptyString());
 		assertThat(person.getPassportNumber(), isEmptyString());
 	}

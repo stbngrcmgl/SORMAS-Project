@@ -413,7 +413,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getAddress().get(Location.HOUSE_NUMBER),
 					joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 					joins.getAddress().get(Location.POSTAL_CODE),
-					joins.getPerson().get(Person.PHONE),
+					joins.getPerson().get(Person.PHONE_NUMBERS),
 					joins.getPerson().get(Person.PHONE_OWNER),
 					joins.getPerson().get(Person.OCCUPATION_TYPE),
 					joins.getPerson().get(Person.OCCUPATION_DETAILS),

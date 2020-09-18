@@ -17,20 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
-import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
-import static de.symeda.sormas.ui.utils.CssStyles.style;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
-
-import java.time.Month;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -38,7 +24,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -65,6 +50,21 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import org.apache.commons.collections.CollectionUtils;
+
+import java.time.Month;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+
+import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
+import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.CssStyles.style;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
@@ -72,6 +72,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
+	private static final String PHONE_NUMBER_LOC = "phoneNumberLoc";
 
 	private ComboBox birthDateDay;
 	private OptionGroup facilityOrHome;
@@ -94,7 +95,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(PersonDto.SEX))
 			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
 			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
-			+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
+			+ fluidRowLocs(PHONE_NUMBER_LOC, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
 
 	public CaseCreateForm() {
@@ -163,8 +164,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		DateField onsetDate = addCustomField(SymptomsDto.ONSET_DATE, Date.class, DateField.class);
 		onsetDate.setCaption(I18nProperties.getCaption(Captions.Symptoms_onsetDate));
 
-		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
-		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
+		TextField phone = addCustomField(PHONE_NUMBER_LOC, String.class, TextField.class);
+		phone.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE_NUMBER));
 		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
 		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
 
@@ -499,7 +500,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	public String getPhone() {
-		return (String) getField(PersonDto.PHONE).getValue();
+		return (String) getField(PHONE_NUMBER_LOC).getValue();
 	}
 
 	public String getEmailAddress() {
@@ -516,8 +517,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
-			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
-			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getPhone());
+			if (CollectionUtils.isNotEmpty(person.getPhoneNumbers())) {
+				((TextField) getField(PHONE_NUMBER_LOC)).setValue(person.getPhoneNumbers().get(0));
+			}
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
@@ -526,7 +529,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			getField(PersonDto.BIRTH_DATE_YYYY).clear();
 			getField(PersonDto.SEX).clear();
 			getField(PersonDto.PRESENT_CONDITION).clear();
-			getField(PersonDto.PHONE).clear();
+			getField(PHONE_NUMBER_LOC).clear();
 			getField(PersonDto.EMAIL_ADDRESS).clear();
 		}
 	}

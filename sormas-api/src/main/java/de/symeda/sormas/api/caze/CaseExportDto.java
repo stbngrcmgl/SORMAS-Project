@@ -164,8 +164,8 @@ public class CaseExportDto implements Serializable {
 	@PersonalData
 	@SensitiveData
 	private String addressGpsCoordinates;
-	@SensitiveData
-	private String phone;
+	@PersonalData
+	private String phoneNumbers;
 	private String occupationType;
 	private String educationType;
 	private String travelHistory;
@@ -235,7 +235,7 @@ public class CaseExportDto implements Serializable {
 						 YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
 						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
 						 String addressRegion, String addressDistrict, String city, String street, String houseNumber, String additionalInformation, String postalCode,
-						 String phone, String phoneOwner, EducationType educationType, String educationDetails,
+						 List<String> phoneNumbers, String phoneOwner, EducationType educationType, String educationDetails,
 						 OccupationType occupationType, String occupationDetails, String occupationFacility,
 						 String occupationFacilityUuid, String occupationFacilityDetails, YesNoUnknown traveled,
 						 YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
@@ -297,7 +297,7 @@ public class CaseExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
-		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
+		this.phoneNumbers = PersonHelper.buildPhoneString(phoneNumbers, phoneOwner);
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
 		this.occupationType = PersonHelper.buildOccupationString(
 			occupationType,
@@ -901,10 +901,10 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(PersonDto.PHONE)
+	@ExportProperty(PersonDto.PHONE_NUMBERS)
 	@ExportGroup(ExportGroupType.SENSITIVE)
 	public String getPhone() {
-		return phone;
+		return phoneNumbers;
 	}
 
 	@Order(65)
@@ -1388,8 +1388,8 @@ public class CaseExportDto implements Serializable {
 		this.addressGpsCoordinates = addressGpsCoordinates;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setPhoneNumbers(String phoneNumbers) {
+		this.phoneNumbers = phoneNumbers;
 	}
 
 	public void setOccupationType(String occupationType) {

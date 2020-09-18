@@ -1,10 +1,6 @@
 package de.symeda.sormas.ui.contact;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.vaadin.navigator.View;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -13,6 +9,9 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetailedDto> {
 
@@ -48,7 +47,7 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 				ContactIndexDetailedDto.CITY,
 				ContactIndexDetailedDto.ADDRESS,
 				ContactIndexDetailedDto.POSTAL_CODE,
-				ContactIndexDetailedDto.PHONE));
+				ContactIndexDetailedDto.PHONE_NUMBERS));
 	}
 
 	@Override
@@ -63,7 +62,7 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 		getColumn(ContactIndexDetailedDto.CITY).setWidth(150);
 		getColumn(ContactIndexDetailedDto.ADDRESS).setWidth(200);
 		getColumn(ContactIndexDetailedDto.POSTAL_CODE).setWidth(100);
-		getColumn(ContactIndexDetailedDto.PHONE).setWidth(100);
+		getColumn(ContactIndexDetailedDto.PHONE_NUMBERS).setWidth(100);
 		((Column<ContactIndexDetailedDto, CaseReferenceDto>) getColumn(ContactIndexDetailedDto.CAZE)).setWidth(150)
 			.setRenderer(entry -> entry != null ? entry.getUuid() : null, new UuidRenderer());
 		getColumn(ContactIndexDetailedDto.REPORTING_USER).setWidth(150);

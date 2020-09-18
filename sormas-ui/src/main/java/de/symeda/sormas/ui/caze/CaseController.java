@@ -17,11 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
@@ -40,7 +35,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -105,6 +99,11 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class CaseController {
 
@@ -462,7 +461,7 @@ public class CaseController {
 					duplicatePerson.setBirthdateYYYY(createForm.getBirthdateYYYY());
 					duplicatePerson.setSex(createForm.getSex());
 					duplicatePerson.setPresentCondition(createForm.getPresentCondition());
-					duplicatePerson.setPhone(createForm.getPhone());
+					duplicatePerson.getPhoneNumbers().add(createForm.getPhone());
 					duplicatePerson.setEmailAddress(createForm.getEmailAddress());
 
 					ControllerProvider.getPersonController()

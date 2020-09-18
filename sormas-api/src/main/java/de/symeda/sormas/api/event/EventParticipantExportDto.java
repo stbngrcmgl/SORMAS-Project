@@ -20,11 +20,6 @@
 
 package de.symeda.sormas.api.event;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
@@ -32,6 +27,7 @@ import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.Order;
@@ -39,6 +35,11 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class EventParticipantExportDto implements Serializable {
 
@@ -124,8 +125,8 @@ public class EventParticipantExportDto implements Serializable {
 	@PersonalData
 	@SensitiveData
 	private String addressGpsCoordinates;
-	@SensitiveData
-	private String phone;
+	@PersonalData
+	private String phoneNumbers;
 
 	private String caseUuid;
 
@@ -134,14 +135,14 @@ public class EventParticipantExportDto implements Serializable {
 	private EventParticipantJurisdictionDto jurisdiction;
 
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid, 
-									 
+    public EventParticipantExportDto(long id, long personId, String personUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid,
+
 									 EventStatus eventStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
-									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
-									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
+									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType,
+									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate,
 									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String city, String street, String houseNumber,
-									 String additionalInformation, String postalCode, String phone, String caseUuid) {
+									 String additionalInformation, String postalCode, List<String> phoneNumbers, String caseUuid) {
     	//@formatter:on
 
 		this.id = id;
@@ -181,7 +182,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
-		this.phone = phone;
+		this.phoneNumbers = PersonHelper.buildPhoneString(phoneNumbers, null);
 		this.caseUuid = caseUuid;
 
 		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
@@ -390,8 +391,8 @@ public class EventParticipantExportDto implements Serializable {
 	}
 
 	@Order(50)
-	public String getPhone() {
-		return phone;
+	public String getPhoneNumbers() {
+		return phoneNumbers;
 	}
 
 	@Order(60)
@@ -500,8 +501,8 @@ public class EventParticipantExportDto implements Serializable {
 		this.addressGpsCoordinates = addressGpsCoordinates;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setPhoneNumbers(String phoneNumbers) {
+		this.phoneNumbers = phoneNumbers;
 	}
 
 	public void setCaseUuid(String caseUuid) {

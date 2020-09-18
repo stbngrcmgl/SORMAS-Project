@@ -19,7 +19,6 @@ package de.symeda.sormas.backend.person;
 
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -260,7 +259,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			PersonDto exportPerson = new PersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
 			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
-			exportPerson.setPhone(detailedPerson.getPhone());
+			exportPerson.setPhoneNumbers(detailedPerson.getPhoneNumbers());
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -485,7 +484,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 
-		target.setPhone(source.getPhone());
+		target.setPhoneNumbers(source.getPhoneNumbers());
 		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(locationFacade.fromDto(source.getAddress()));
 		List<Location> locations = new ArrayList<>();
@@ -650,7 +649,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setNickname(source.getNickname());
 		target.setMothersMaidenName(source.getMothersMaidenName());
 
-		target.setPhone(source.getPhone());
+		target.setPhoneNumbers(source.getPhoneNumbers());
 		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
 		List<LocationDto> locations = new ArrayList<>();

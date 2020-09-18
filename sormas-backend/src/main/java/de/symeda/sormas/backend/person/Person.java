@@ -36,6 +36,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -50,8 +51,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
@@ -94,7 +97,7 @@ public class Person extends AbstractDomainObject {
 	public static final String OCCUPATION_COMMUNITY = "occupationCommunity";
 	public static final String OCCUPATION_FACILITY = "occupationFacility";
 	public static final String OCCUPATION_FACILITY_DETAILS = "occupationFacilityDetails";
-	public static final String PHONE = "phone";
+	public static final String PHONE_NUMBERS = "phoneNumbers";
 	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
@@ -136,7 +139,7 @@ public class Person extends AbstractDomainObject {
 	private BurialConductor burialConductor;
 
 	private Location address;
-	private String phone;
+	private List<String> phoneNumbers = new ArrayList<>();
 	private String phoneOwner;
 	private String emailAddress;
 
@@ -303,12 +306,14 @@ public class Person extends AbstractDomainObject {
 		this.address = address;
 	}
 
-	public String getPhone() {
-		return phone;
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	public List<String> getPhoneNumbers() {
+		return phoneNumbers;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setPhoneNumbers(List<String> phoneNumbers) {
+		this.phoneNumbers = phoneNumbers;
 	}
 
 	public String getPhoneOwner() {
