@@ -129,84 +129,62 @@ public abstract class DataImporter {
 		window.setClosable(false);
 		currentUI.addWindow(window);
 
-		Thread importThread = new Thread() {
+		Thread importThread = new Thread(() -> {
+			try {
+				currentUI.setPollInterval(300);
 
-			@Override
-			public void run() {
-				try {
-					currentUI.setPollInterval(300);
+				ImportResultStatus importResult = runImport();
 
-					ImportResultStatus importResult = runImport();
+				// Display a window presenting the import result
+				currentUI.access(() -> {
+					window.setClosable(true);
+					progressLayout.makeClosable(() -> window.close());
 
-					// Display a window presenting the import result
-					currentUI.access(new Runnable() {
+					if (importResult == ImportResultStatus.COMPLETED) {
+						progressLayout.displaySuccessIcon();
+						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportSuccessful));
+					} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
+						progressLayout.displayWarningIcon();
+						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportPartiallySuccessful));
+					} else if (importResult == ImportResultStatus.CANCELED) {
+						progressLayout.displaySuccessIcon();
+						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceled));
+					} else {
+						progressLayout.displayWarningIcon();
+						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceledErrors));
+					}
 
-						@Override
-						public void run() {
-							window.setClosable(true);
-							progressLayout.makeClosable(() -> {
-								window.close();
-							});
-
-							if (importResult == ImportResultStatus.COMPLETED) {
-								progressLayout.displaySuccessIcon();
-								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportSuccessful));
-							} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
-								progressLayout.displayWarningIcon();
-								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportPartiallySuccessful));
-							} else if (importResult == ImportResultStatus.CANCELED) {
-								progressLayout.displaySuccessIcon();
-								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceled));
-							} else {
-								progressLayout.displayWarningIcon();
-								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceledErrors));
-							}
-
-							window.addCloseListener(e -> {
-								if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS
-									|| importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
-									StreamResource streamResource = createErrorReportStreamResource();
-									errorReportConsumer.accept(streamResource);
-								}
-							});
-
-							currentUI.setPollInterval(-1);
+					window.addCloseListener(e -> {
+						if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS
+							|| importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
+							StreamResource streamResource = createErrorReportStreamResource();
+							errorReportConsumer.accept(streamResource);
 						}
 					});
-				} catch (InvalidColumnException e) {
-					currentUI.access(new Runnable() {
 
-						@Override
-						public void run() {
-							window.setClosable(true);
-							progressLayout.makeClosable(() -> {
-								window.close();
-							});
-							progressLayout.displayErrorIcon();
-							progressLayout
-								.setInfoLabelText(String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()));
-							currentUI.setPollInterval(-1);
-						}
-					});
-				} catch (Exception e) {
-					logger.error(e.getMessage(), e);
+					currentUI.setPollInterval(-1);
+				});
+			} catch (InvalidColumnException e) {
+				currentUI.access(() -> {
+					window.setClosable(true);
+					progressLayout.makeClosable(() -> window.close());
+					progressLayout.displayErrorIcon();
+					progressLayout
+						.setInfoLabelText(String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()));
+					currentUI.setPollInterval(-1);
+				});
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
 
-					currentUI.access(new Runnable() {
-
-						@Override
-						public void run() {
-							window.setClosable(true);
-							progressLayout.makeClosable(() -> {
-								window.close();
-							});
-							progressLayout.displayErrorIcon();
-							progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
-							currentUI.setPollInterval(-1);
-						}
-					});
-				}
+				currentUI.access(() -> {
+					window.setClosable(true);
+					progressLayout.makeClosable(() -> window.close());
+					progressLayout.displayErrorIcon();
+					progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
+					currentUI.setPollInterval(-1);
+				});
 			}
-		};
+		});
 
 		importThread.start();
 	}
