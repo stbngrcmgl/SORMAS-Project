@@ -48,6 +48,8 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +110,6 @@ public class KeycloakService {
 
 		try {
 			JSONObject json = JSONObjectUtils.parse(oidcJson.get());
-
 			keycloak = KeycloakBuilder.builder()
 				.realm(json.getAsString(OIDC_REALM))
 				.serverUrl(json.getAsString(OIDC_SERVER_URL))

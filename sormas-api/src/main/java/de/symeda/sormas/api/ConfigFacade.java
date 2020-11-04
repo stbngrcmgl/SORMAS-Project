@@ -103,6 +103,12 @@ public interface ConfigFacade {
 	SormasToSormasConfig getSormasToSormasConfig();
 
 	String getSurvnetGatewayUrl();
+	
+	String getProxyHost();
+		
+	int getProxyPort();
+
+	String getProxyProtocol();
 
 	String getAuthenticationProvider();
 
