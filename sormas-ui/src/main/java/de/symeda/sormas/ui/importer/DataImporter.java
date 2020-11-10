@@ -72,7 +72,7 @@ public abstract class DataImporter {
 	/**
 	 * The input CSV file that contains the data to be imported.
 	 */
-	private File inputFile;
+	protected File inputFile;
 	/**
 	 * Whether or not the import file is supposed to have an additional row on top containing the entity name.
 	 * This is necessary for importers that also import data that is not referenced in the root entity,
@@ -117,10 +117,9 @@ public abstract class DataImporter {
 	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible)
 		throws IOException, CsvValidationException {
 
-		ImportProgressLayout progressLayout =
-			new ImportProgressLayout(readImportFileLength(inputFile), currentUI, this::cancelImport, duplicatesPossible);
+		ImportProgressLayout progressLayout = this.getImportProgressLayout(currentUI, duplicatesPossible);
 
-		importedLineCallback = result -> progressLayout.updateProgress(result);
+		importedLineCallback = progressLayout::updateProgress;
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingDataImport));
@@ -138,7 +137,7 @@ public abstract class DataImporter {
 				// Display a window presenting the import result
 				currentUI.access(() -> {
 					window.setClosable(true);
-					progressLayout.makeClosable(() -> window.close());
+					progressLayout.makeClosable(window::close);
 
 					if (importResult == ImportResultStatus.COMPLETED) {
 						progressLayout.displaySuccessIcon();
@@ -167,7 +166,7 @@ public abstract class DataImporter {
 			} catch (InvalidColumnException e) {
 				currentUI.access(() -> {
 					window.setClosable(true);
-					progressLayout.makeClosable(() -> window.close());
+					progressLayout.makeClosable(window::close);
 					progressLayout.displayErrorIcon();
 					progressLayout
 						.setInfoLabelText(String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()));
@@ -178,7 +177,7 @@ public abstract class DataImporter {
 
 				currentUI.access(() -> {
 					window.setClosable(true);
-					progressLayout.makeClosable(() -> window.close());
+					progressLayout.makeClosable(window::close);
 					progressLayout.displayErrorIcon();
 					progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
 					currentUI.setPollInterval(-1);
@@ -190,18 +189,23 @@ public abstract class DataImporter {
 	}
 
 	/**
+	 * Can be overriden by subclasses to provide alternative progress layouts
+	 */
+	protected ImportProgressLayout getImportProgressLayout(UI currentUI, boolean duplicatesPossible) throws IOException, CsvValidationException {
+		return new ImportProgressLayout(readImportFileLength(inputFile), currentUI, this::cancelImport, duplicatesPossible);
+	}
+
+	/**
 	 * To be called by async import thread or unit test
 	 */
 	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 		logger.debug("runImport - " + inputFile.getAbsolutePath());
 		Date methodDate = new Date();
 
-		CSVReader csvReader = null;
-		try {
-			csvReader = CSVUtils.createCSVReader(
+		try (CSVReader csvReader = CSVUtils.createCSVReader(
 				new InputStreamReader(new FileInputStream(inputFile), UTF_8),
 				FacadeProvider.getConfigFacade().getCsvSeparator(),
-				new CSVCommentLineValidator());
+				new CSVCommentLineValidator())) {
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
 
 			// Build dictionary of entity headers
@@ -223,9 +227,7 @@ public abstract class DataImporter {
 			// Write first line to the error report writer
 			String[] columnNames = new String[entityProperties.length + 1];
 			columnNames[0] = ERROR_COLUMN_NAME;
-			for (int i = 0; i < entityProperties.length; i++) {
-				columnNames[i + 1] = entityProperties[i];
-			}
+			System.arraycopy(entityProperties, 0, columnNames, 1, entityProperties.length);
 			errorReportCsvWriter.writeNext(columnNames);
 
 			// Read and import all lines from the import file
@@ -259,9 +261,6 @@ public abstract class DataImporter {
 				return ImportResultStatus.COMPLETED;
 			}
 		} finally {
-			if (csvReader != null) {
-				csvReader.close();
-			}
 			if (errorReportCsvWriter != null) {
 				errorReportCsvWriter.flush();
 				errorReportCsvWriter.close();
@@ -274,7 +273,7 @@ public abstract class DataImporter {
 	}
 
 	protected Writer createErrorReportWriter() throws IOException {
-		File errorReportFile = new File(errorReportFilePath.toString());
+		File errorReportFile = new File(errorReportFilePath);
 		if (errorReportFile.exists()) {
 			errorReportFile.delete();
 		}
