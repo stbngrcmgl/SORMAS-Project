@@ -520,7 +520,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<String> resultContactsUuids = exportContacts.stream().map(ContactExportDto::getUuid).collect(Collectors.toList());
 
 		if (!exportContacts.isEmpty()) {
-			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
+			List<Long> exportContactIds = exportContacts.stream().map(ContactExportDto::getId).collect(Collectors.toList());
 
 			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
@@ -541,16 +541,14 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
 
-			Map<Long, List<EpiDataTravel>> travels = null;
-			List<EpiDataTravel> travelsList = null;
 			CriteriaQuery<EpiDataTravel> travelsCq = cb.createQuery(EpiDataTravel.class);
 			Root<EpiDataTravel> travelsRoot = travelsCq.from(EpiDataTravel.class);
 			Join<EpiDataTravel, EpiData> travelsEpiDataJoin = travelsRoot.join(EpiDataTravel.EPI_DATA, JoinType.LEFT);
 			Expression<String> epiDataIdsExpr = travelsEpiDataJoin.get(EpiData.ID);
 			travelsCq.where(epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())));
 			travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
-			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-			travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
+			List<EpiDataTravel> travelsList  = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			Map<Long, List<EpiDataTravel>> travels = travelsList.stream().collect(Collectors.groupingBy(t -> t.getEpiData().getId()));
 
 			// Load latest events info
 			// Adding a second query here is not perfect, but selecting the last event with a criteria query
@@ -584,16 +582,14 @@ public class ContactFacadeEjb implements ContactFacade {
 				if (travels != null) {
 					Optional.ofNullable(travels.get(exportContact.getEpiDataId())).ifPresent(caseTravels -> {
 						StringBuilder travelHistoryBuilder = new StringBuilder();
-						caseTravels.forEach(travel -> {
-							travelHistoryBuilder.append(
-								EpiDataTravelHelper.buildTravelString(
-									travel.getTravelType(),
-									travel.getTravelDestination(),
-									travel.getTravelDateFrom(),
-									travel.getTravelDateTo(),
-									userLanguage))
-								.append(", ");
-						});
+						caseTravels.forEach(travel -> travelHistoryBuilder.append(
+							EpiDataTravelHelper.buildTravelString(
+								travel.getTravelType(),
+								travel.getTravelDestination(),
+								travel.getTravelDateFrom(),
+								travel.getTravelDateTo(),
+								userLanguage))
+							.append(", "));
 						if (travelHistoryBuilder.length() > 0) {
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length());
 						}
@@ -650,7 +646,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<VisitSummaryExportDto> visitSummaries = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		if (!visitSummaries.isEmpty()) {
-			List<String> visitSummaryUuids = visitSummaries.stream().map(e -> e.getUuid()).collect(Collectors.toList());
+			List<String> visitSummaryUuids = visitSummaries.stream().map(VisitSummaryExportDto::getUuid).collect(Collectors.toList());
 
 			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
@@ -717,7 +713,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
 				.entrySet()
 				.stream()
-				.max((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
+				.max(Map.Entry.comparingByValue())
 				.get()
 				.getValue();
 		} else {
@@ -787,7 +783,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -827,7 +823,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		if (!resultList.isEmpty()) {
 
-			List<String> contactUuids = resultList.stream().map(d -> d.getUuid()).collect(Collectors.toList());
+			List<String> contactUuids = resultList.stream().map(FollowUpDto::getUuid).collect(Collectors.toList());
 
 			CriteriaQuery<Object[]> visitsCq = cb.createQuery(Object[].class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
@@ -983,9 +979,9 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
 
-			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[2] = caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
+			counts[0] = caseContactCounts.stream().min(Comparator.naturalOrder()).orElse(0L).intValue();
+			counts[1] = caseContactCounts.stream().max(Comparator.naturalOrder()).orElse(0L).intValue();
+			counts[2] = caseContactCounts.stream().reduce(0L, Long::sum).intValue() / caseIds.size();
 
 			return counts;
 		}
@@ -1148,10 +1144,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getCurrentUser();
 
-		List<DashboardQuarantineDataDto> dashboardContactsInQuarantine =
-			contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
-
-		return dashboardContactsInQuarantine;
+		return contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
 	}
 
 	@Override
@@ -1204,16 +1197,14 @@ public class ContactFacadeEjb implements ContactFacade {
 				}
 
 				pseudonymizer.pseudonymizeDto(EpiDataDto.class, dto.getEpiData(), isInJurisdiction, e -> {
-					pseudonymizer.pseudonymizeDtoCollection(EpiDataBurialDto.class, e.getBurials(), b -> isInJurisdiction, (b, bInJurisdiction) -> {
-						pseudonymizer.pseudonymizeDto(LocationDto.class, b.getBurialAddress(), bInJurisdiction, null);
-					});
+					pseudonymizer.pseudonymizeDtoCollection(EpiDataBurialDto.class, e.getBurials(), b -> isInJurisdiction, (b, bInJurisdiction) ->
+							pseudonymizer.pseudonymizeDto(LocationDto.class, b.getBurialAddress(), bInJurisdiction, null));
 
 					pseudonymizer.pseudonymizeDtoCollection(EpiDataTravelDto.class, e.getTravels(), t -> isInJurisdiction, null);
 
 					pseudonymizer
-						.pseudonymizeDtoCollection(EpiDataGatheringDto.class, e.getGatherings(), g -> isInJurisdiction, (g, bInJurisdiction) -> {
-							pseudonymizer.pseudonymizeDto(LocationDto.class, g.getGatheringAddress(), bInJurisdiction, null);
-						});
+						.pseudonymizeDtoCollection(EpiDataGatheringDto.class, e.getGatherings(), g -> isInJurisdiction, (g, bInJurisdiction) ->
+								pseudonymizer.pseudonymizeDto(LocationDto.class, g.getGatheringAddress(), bInJurisdiction, null));
 				});
 			});
 		}
