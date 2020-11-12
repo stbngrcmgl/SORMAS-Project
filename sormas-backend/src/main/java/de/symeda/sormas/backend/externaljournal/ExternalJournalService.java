@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.externaljournal;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +42,7 @@ import de.symeda.sormas.api.externaljournal.PatientDiaryPersonValidation;
 import de.symeda.sormas.api.externaljournal.PatientDiaryRegisterResult;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -186,18 +186,16 @@ public class ExternalJournalService {
 	/**
 	 * Notify external journals that a person has been updated
 	 * 
-	 * @param existingPerson
+	 * @param existingJournalPerson
 	 *            the person already available in the external journal
-	 * @param updatedPerson
-	 *            the updated person in SORMAS
 	 */
-	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-		if (shouldNotify(existingPerson, updatedPerson)) {
+	public void notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
+		if (shouldNotify(existingJournalPerson)) {
 			if (configFacade.getSymptomJournalConfig().getUrl() != null) {
-				notifySymptomJournal(existingPerson.getUuid());
+				notifySymptomJournal(existingJournalPerson.getUuid());
 			}
 			if (configFacade.getPatientDiaryConfig().getUrl() != null) {
-				notifyPatientDiary(existingPerson.getUuid());
+				notifyPatientDiary(existingJournalPerson.getUuid());
 			}
 		}
 	}
@@ -206,19 +204,12 @@ public class ExternalJournalService {
 	 * Note: This method just checks for changes in the Person data.
 	 * It can not check for Contact related data such as FollowUpUntil dates.
 	 */
-	private boolean shouldNotify(PersonDto existingPerson, PersonDto updatedPerson) {
-		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(existingPerson.getSymptomJournalStatus())
-			|| SymptomJournalStatus.REGISTERED.equals(existingPerson.getSymptomJournalStatus());
-		boolean relevantFieldsUpdated = Comparator.comparing(PersonDto::getFirstName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getLastName, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getEmailAddress, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getPhone, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateDD, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateMM, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getBirthdateYYYY, Comparator.nullsLast(Comparator.naturalOrder()))
-			.thenComparing(PersonDto::getSex, Comparator.nullsLast(Comparator.naturalOrder()))
-			.compare(existingPerson, updatedPerson)
-			!= 0;
+	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
+		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
+		boolean relevantPerson = SymptomJournalStatus.ACCEPTED.equals(detailedExistingPerson.getSymptomJournalStatus())
+			|| SymptomJournalStatus.REGISTERED.equals(detailedExistingPerson.getSymptomJournalStatus());
+		JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
+		boolean relevantFieldsUpdated = !existingJournalPerson.equals(updatedJournalPerson);
 		return relevantPerson && relevantFieldsUpdated;
 	}
 
@@ -277,7 +268,7 @@ public class ExternalJournalService {
 	/**
 	 * Attempts to register a new patient in the CLIMEDO patient diary.
 	 * Sets the person symptom journal status to REGISTERED if successful.
-	 * 
+	 *
 	 * @param person
 	 *            the person to register as a patient in CLIMEDO
 	 * @return true if the registration was successful, false otherwise
@@ -315,7 +306,8 @@ public class ExternalJournalService {
 
 	/**
 	 * Check whether a person has valid data in order to be registered in the patient diary
-	 * 
+	 *
+	 *
 	 * @param person
 	 *            the person to validate
 	 * @return the result of the validation
@@ -369,7 +361,7 @@ public class ExternalJournalService {
 
 	/**
 	 * Queries the CLIMEDO patients for ones matching the given property
-	 * 
+	 *
 	 * @param key
 	 *            the name of the property to match
 	 * @param value
