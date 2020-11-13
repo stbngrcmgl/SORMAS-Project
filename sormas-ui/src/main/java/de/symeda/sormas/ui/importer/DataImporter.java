@@ -14,6 +14,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.EntityDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +48,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.region.CountryDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -51,6 +56,7 @@ import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -95,6 +101,10 @@ public abstract class DataImporter {
 	 * Whether or not the current import has resulted in at least one error.
 	 */
 	private boolean hasImportError;
+	/**
+	 * CSV separator used in the file
+	 */
+	private char csvSeparator;
 
 	protected UserReferenceDto currentUser;
 	private CSVWriter errorReportCsvWriter;
@@ -109,6 +119,8 @@ public abstract class DataImporter {
 			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
+
+		this.csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
 	}
 
 	/**
@@ -204,9 +216,9 @@ public abstract class DataImporter {
 
 		try (CSVReader csvReader = CSVUtils.createCSVReader(
 				new InputStreamReader(new FileInputStream(inputFile), UTF_8),
-				FacadeProvider.getConfigFacade().getCsvSeparator(),
+				this.csvSeparator,
 				new CSVCommentLineValidator())) {
-			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
+			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), this.csvSeparator);
 
 			// Build dictionary of entity headers
 			String[] entityClasses;
@@ -297,7 +309,7 @@ public abstract class DataImporter {
 	protected int readImportFileLength(File inputFile) throws IOException, CsvValidationException {
 		int importFileLength = 0;
 		try (CSVReader caseCountReader =
-			CSVUtils.createCSVReader(new FileReader(inputFile), FacadeProvider.getConfigFacade().getCsvSeparator(), new CSVCommentLineValidator())) {
+			CSVUtils.createCSVReader(new FileReader(inputFile), this.csvSeparator, new CSVCommentLineValidator())) {
 
 			while (readNextValidLine(caseCountReader) != null) {
 				importFileLength++;
@@ -513,5 +525,9 @@ public abstract class DataImporter {
 		}
 		while (isCommentLine);
 		return nextValidLine;
+	}
+
+	public void setCsvSeparator(char csvSeparator) {
+		this.csvSeparator = csvSeparator;
 	}
 }
