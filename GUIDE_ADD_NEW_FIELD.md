@@ -1,55 +1,55 @@
-# How to add a new field?
+# ¿Cómo agregar un nuevo campo?
 
-This guide explains how to add a new plain field to the SORMAS data schema.
-It does **not** explain how to add list fields, new sections or concepts to SORMAS.
+Esta guía explica cómo agregar un nuevo campo sin formato al esquema de datos de SORMAS.
+**No** explica cómo agregar campos de lista, nuevas secciones, o conceptos a SORMAS.
 
-**Important:** This is the first version of this guide. Please get in contact if anything is not clear or you have suggestions on how to improve the guide, the source code or the underlying architecture.
+**Importante:** Esta es la primera versión de esta guía. Póngase en contacto si algo no está claro o si tiene sugerencias sobre cómo mejorar la guía, el código fuente o la arquitectura subyacente.
 
-### Example use cases
+### Ejemplos de casos de uso
 
-* A symptom is needed for a specific disease (e.g. headache)
-* A field with additional epidemiological details on a case (e.g. contact with a special type of animal)
+* Se necesita un síntoma para una enfermedad específica (por ejemplo, dolor de cabeza)
+* Un campo con detalles epidemiológicos adicionales sobre un caso (por ejemplo, contacto con un tipo especial de animal)
 
-## 0. Preparation (!)
+## 0. Preparación (!)
 
-1. Make sure the field is not already in the system. 
-   SORMAS has a lot of data fields and many of them are only used for a few diseases and hidden for other ones. 
-   The best way to make sure is to open the data dictionary and go through the existing fields of all related data sections: https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx
-2. Clearly define the field:
-   * Name and description
-   * Field type: plain text, pre-defined values (enum), date, time, number
-   * Example values
-   * Who is supposed to enter the field?
-   * Who is supposed to read the field?
-3. [Set up your local development environment](DEVELOPMENT_ENVIRONMENT.md)
+1. Asegúrese de que el campo no esté ya en el sistema. 
+   SORMAS tiene muchos campos de datos, y muchos de ellos solo se usan para algunas enfermedades y están ocultos para otras. 
+   La mejor manera de asegurarse es abrir el diccionario de datos y revisar los campos existentes de todas las secciones de datos relacionadas: https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx
+2. Defina claramente el campo:
+   * Nombre y descripción
+   * Tipo de campo: texto sin formato, valores predefinidos (enumeración), fecha, hora, número
+   * Ejemplos de valores
+   * ¿Quién puede ingresar el campo?
+   * ¿Quién puede leer el campo?
+3. [Configure su entorno de desarrollo local](DEVELOPMENT_ENVIRONMENT.md)
    
-## I. Adding the field to the SORMAS API
+## I. Agregar el campo a la API de SORMAS
 
-The SORMAS API is the heart of the data schema. Accordingly, this is where you have to get started.
+La API de SORMAS es el corazón del esquema de datos. En consecuencia, aquí es donde debe comenzar.
 
-1. Identify the class where the field needs to be added. For most scenarios you will only need to have a look at CaseDataDto.java and all the fields used in there, e.g. SymptomsDto.
-2. Add the field as a private member of the class with a get- and set-method. In addition a static final String to be used as a constant to identify the field.
-3. If the field has pre-defined values add a enum in the package of the class. Have a look at one of the existing enums for reference.
-4. Add the caption to captions.properties and description to description.properties in the project resources. For enums add all values to enum.properties.
+1. Identifique la clase donde debe agregarse el campo. En la mayoría de los escenarios, solo necesitará revisar CaseDataDto.java y todos los campos utilizados allí, por ejemplo, SymptomsDto.
+2. Agregue el campo como miembro privado de la clase con métodos get y set. Además, un static final String que se utilizará como constante para identificar el campo.
+3. Si el campo tiene valores predefinidos, agregue una enumeración en el paquete de la clase. Mire una de las enumeraciones existentes como referencia.
+4. Agregue el título a captions.properties y la descripción a description.properties en los recursos del proyecto. Para las enumeraciones, agregue todos los valores a enum.properties.
    ```
    Symptoms.soreThroat = Sore throat/pharyngitis
    ```
-5. When you made additions/changes on keys in ``captions.properties``, ``strings.properties`` or ``validations.properties`` you have to run ``I18nConstantGenerator`` (run as ... Java Application) to update the corresponding Constants classes.
-6. *Very important*: We have now officially made a change to the API which likely means that old versions are no longer fully compatible.
-   When data with the new field is sent to a mobile device with an old version, it will not know about the field and the data is lost on the device.
-   When the data is send back to the server the empty field may override any existing data and it's now also lost on the server itself.
-   To avoid this the following has to be done:
-   * Open the InfoProvider.getMinimumRequiredVersion method.
-   * Set the version to the current development version (without the -SNAPSHOT). You can find the current version in the maven pom.xml configuration file.
+5. Cuando haga adiciones/cambios de claves en ``captions.properties``, ``strings.properties`` o ``validations.properties`` debe ejecutar ``I18nConstantGenerator`` (ejecutar como ... Aplicación Java) para actualizar las clases Constants correspondientes.
+6. *Muy importante*: Ahora hemos realizado oficialmente un cambio en la API, lo que probablemente signifique que las versiones anteriores ya no son totalmente compatibles.
+   Cuando datos con el nuevo campo son enviados a un dispositivo móvil con una versión anterior, esta no sabrá sobre el campo y los datos se perderán en el dispositivo.
+   Cuando los datos se envíen de vuelta al servidor, el campo vacío puede sobrescribir los datos existentes, y ahora también se pierden en el servidor.
+   Para evitar esto, se debe hacer lo siguiente:
+   * Abra el método InfoProvider.getMinimumRequiredVersion.
+   * Establezca la versión como la versión de desarrollo actual (sin el -SNAPSHOT). Puede encontrar la versión actual en el archivo de configuración maven pom.xml.
    
-## II. Adding the field to the SORMAS backend
+## II. Agregar el campo al backend de SORMAS
 
-The SORMAS backend is responsible for persisting all data into the servers database and to make this data accessible.
-Accordingly it's necessary to extend the persistence logic with the new field.
+El backend de SORMAS es responsable de conservar todos los datos en la base de datos de los servidores, y de hacer accesibles esos datos.
+En consecuencia, es necesario extender la lógica de persistencia con el nuevo campo.
 
-1. Identify the entity class that matches the API class where the field was added (e.g. Case.java).
-2. Add the field as a private member of the entity class with a get- and set-method.
-3. Add the correct JPA annotation to the get-method (see other fields for examples).
+1. Identifique la clase de entidad que corresponde a la clase de API donde se agregó el campo (por ejemplo, Case.java).
+2. Agregue el campo como miembro privado de la clase de entidad con métodos get y set.
+3. Agregue la anotación JPA correcta al método get (revise otros campos para ver ejemplos).
    ```
 	@Enumerated(EnumType.STRING)
 	public SymptomState getSoreThroat() {
@@ -57,45 +57,45 @@ Accordingly it's necessary to extend the persistence logic with the new field.
 	}
    ```
 
-In addition to this the sormas_schema.sql file in sormas-base/sql has to be extended:
+Además de esto, el archivo sormas_schema.sql en sormas-base/sql debe extenderse:
 
-4. Scroll to the bottom and add a new schema_version block. 
-   It starts with a comment that contains the date and a short info on the changes and the github issue id and ends with and "INSERT INTO schema_version..." where the version has to be incremented.
+4. Desplácese hasta el final y agregue un nuevo bloque schema_version. 
+   Comienza con un comentario que contiene la fecha y una breve información sobre los cambios y la id de issue de github, y termina con "INSERT INTO schema_version..." donde la versión debe incrementarse.
    ```
    -- 2019-02-20 Additional signs and symptoms #938
    
    INSERT INTO schema_version (version_number, comment) VALUES (131, 'Additional signs and symptoms #938');
    ```
-5. Within this block add a new column to the table that matches the entity where the new field was added in sormas-backend.
-   You can scroll up to see examples of this for all the different field types. Note that the column name is all lower case.
+5. Dentro de este bloque, agregue una nueva columna a la tabla que corresponda a la entidad donde se agregó el nuevo campo en sormas-backend.
+   Puede desplazarse hacia arriba para ver ejemplos de esto para los diferentes tipos de campos. Tenga en cuenta que el nombre de la columna es todo en minúsculas.
    ```
    ALTER TABLE symptoms ADD COLUMN sorethroat varchar(255);
    ```
-6. Make sure to also add the column to the corresponding history table in the database.
-7. Update default values if needed.
-8. Try to execute the SQL on your system!
+6. Asegúrese de agregar también la columna a la correspondiente tabla de historial en la base de datos.
+7. Actualice los valores predeterminados si es necesario.
+8. ¡Intente ejecutar el SQL en su sistema!
 
-Now we need to make sure data in the new field is exchanged between the backend entity classes and the API data transfer objects.
+Ahora debemos asegurar que los datos del nuevo campo sean intercambiados entre las clases de entidad del backend y los objetos de transferencia de datos de la API.
 
-9. Identify the *FacadeEjb class for the entity (e.g. CaseFacadeEjb).
-10. Extend the toDto and fromDto/fillOrBuildEntity methods to exchange data between the API class and the backend entity class that is persisted.
+9.  Identifique la clase *FacadeEjb para la entidad (por ejemplo, CaseFacadeEjb).
+10. Extienda los métodos toDto y fromDto/fillOrBuildEntity para intercambiar datos entre la clase de API y la clase de entidad del backend que se conserva.
     ```
 	target.setSoreThroat(source.getSoreThroat());
     ```
-Now we need to make sure data in the new field is exported by the detailed export.
+Ahora debemos asegurar que la exportación detallada exporte los datos del nuevo campo.
 
-11. Identify corresponding *ExportDto (e.g. CaseExportDto)
-12. Add the field as a private member of the dto class with a get- and set-method.
-13. Add the @Order annotation on the getter method of the new field
+11. Identifique la correspondiente *ExportDto (por ejemplo, CaseExportDto)
+12. Agregue el campo como miembro privado de la clase dto con métodos get y set.
+13. Agregue la anotación @Order en el método get del nuevo campo
     ```
     @Order(33)
     public SymptomState getSoreThroat() {
         return soreThroat;
     }
     ```
-    > **NOTE**: The @Order numbers should be unique so please increase the order of the getters below if there are any.
-14. Initialize the new field in the constructor
-15. Add the new field in the selection list in the `getExportList` method of the *FacadeEJB
+    > **NOTA**:  Los números @Order deben ser únicos; incremente el orden de los métodos get siguientes si los hay.
+14. Inicialice el nuevo campo en el constructor.
+15. Agregue el nuevo campo en la lista de selección del método `getExportList` de *FacadeEJB
     ```
     cq.multiselect(
         ...,
@@ -103,55 +103,55 @@ Now we need to make sure data in the new field is exported by the detailed expor
         ...
     )
     ``` 
-    > **NOTE**: Make sure the order of the fields in the selection list corresponds the order of arguments in the constructor of *ExportDto class  
-### III. Adding the field to the SORMAS UI
+    > **NOTA**: Asegure que el orden de los campos en la lista de selección corresponda con el orden de los argumentos en el constructor de la clase *ExportDto  
+### III. Agregar el campo a la interfaz de usuario de SORMAS
 
-The SORMAS UI is the web application that is used by supervisors, laboratory users, national instances and others.
-Here we have to extend the form where the field is supposed to be shown and edited. Note that the web application uses the same form for read and write mode, so the field only needs to be added once.
+La interfaz de usuario de SORMAS es la aplicación web que utilizan supervisores, usuarios de laboratorio, instancias nacionales y otros.
+Aquí tenemos que extender el formulario donde se debe mostrar y editar el campo. Tenga en cuenta que la aplicación web utiliza el mismo formulario para los modos de lectura y escritura, por lo que el campo solo debe agregarse una vez.
 
-1. Identify the Form class where the new field is supposed to be shown. Examples of this are SymptomsForm.class, CaseDataForm.class or EpiDataForm.class.
-2. Add the new field to the HTML layout definition in the top of the form class. The forms use column layouts based on the bootstrap CSS library.
+1. Identifique la clase Form donde se debe mostrar el nuevo campo. Ejemplos son SymptomsForm.class, CaseDataForm.class o EpiDataForm.class.
+2. Agregue el nuevo campo a la definición de diseño HTML en la parte superior de la clase de formulario. Los formularios utilizan diseños de columnas basados ​​en la biblioteca CSS de arranque (bootstrap).
    ```
    LayoutUtil.fluidRowLocs(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE) +
    ```
-3. Go to the addFields method of the form and add the field. 
-   You can add it without defining a UI field type - this will use a default UI field type based on the type of the data field (see SormasFieldGroupFieldFactory):
+3. Vaya al método addFields del formulario y agregue el campo. 
+   Puede agregarlo sin definir un tipo de campo de interfaz de usuario; esto usará un tipo de campo de interfaz de usuario predeterminado según el tipo del campo de datos (vea SormasFieldGroupFieldFactory):
    ```
    addFields(EpiDataDto.WATER_BODY, EpiDataDto.WATER_BODY_DETAILS, EpiDataDto.WATER_SOURCE);
    ```
-   Or you can define the type of UI field that should be used and provide additional initialization for the field:
+   O puede definir el tipo de campo de interfaz de usuario que se debe usar, y proporcionar inicialización adicional para el campo:
    ```
    ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
    region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
    ```   
-4. The FieldHelper class provides methods to conditionally make the field visible, required or read-only, based on the values of other fields.
-5. Finally have a try in the web application to check if everything is working as expected.
+4. La clase FieldHelper proporciona métodos para hacer que el campo sea visible, obligatorio o de solo lectura en forma condicional, según los valores de otros campos.
+5. Por último, pruebe la aplicación web para comprobar si todo funciona como se espera.
 
-### IV. Adding the field to the SORMAS Android app
+### IV. Agregar el campo a la aplicación de Android de SORMAS
 
-The SORMAS Android app synchronizes with the server using the SORMAS ReST interface. The app does have it's own database to persist all data of the user for offline usage. Thus it's necessary to extend the entity classes used by the app.
+La aplicación de Android de SORMAS se sincroniza con el servidor mediante la interfaz ReST de SORMAS. La aplicación tiene su propia base de datos para conservar todos los datos del usuario para uso sin conexión. Por tanto, es necesario extender las clases de entidad utilizadas por la aplicación.
 
-1. Identify the entity class in the sormas-app backend sub-package.
-2. Add the field as a private member of the entity class with a get- and set-method.
-3. Add the correct JPA or ORM-lite annotation to the private member (see other fields for examples).
-   Note: In the future this may be replaced by using Android Room.
-4. Identify the *DtoHelper class for the entity (e.g. CaseDtoHelper).
-5. Extend the fillInnerFromAdo and fillInnerFromDto methods to exchange data between the API class and the app entity class that is persisted.
+1. Identifique la clase de entidad en el subpaquete de backend de sormas-app.
+2. Agregue el campo como miembro privado de la clase de entidad con métodos get y set.
+3. Agregue la anotación JPA u ORM-lite correcta al miembro privado (revise otros campos para ver ejemplos).
+   Nota: En el futuro, esto puede reemplazarse utilizando Android Room.
+4. Identifique la clase *DtoHelper para la entidad (por ejemplo, CaseDtoHelper).
+5. Extienda los métodos fillInnerFromAdo y fillInnerFromDto para intercambiar datos entre la clase de API y la clase de entidad de la aplicación que se conserva.
 
-SORMAS allows users to upgrade from old app versions. Thus it's necessary to add the needed SQL to the onUpgrade method in the DatabaseHelper class.
+SORMAS permite a los usuarios actualizar desde versiones anteriores de la aplicación. Por lo tanto, es necesario agregar el SQL necesario al método onUpgrade de la clase DatabaseHelper.
 
-6. Increment the DATABASE_VERSION variable in the DatabaseHelper class.
-7. Go to the end of the onUpgrade method and add a new case block that defines how to upgrade to the new version.
-8. Execute the needed SQL using the DAO (database access object) of the entity class. 
-   You can mostly use the same SQL used for adding the field to the SORMAS backend. The column name has to match the field name in the entity class (not all lower case).
+6. Incremente la variable DATABASE_VERSION en la clase DatabaseHelper.
+7. Vaya al final del método onUpgrade y agregue un nuevo bloque case que defina cómo actualizar a la nueva versión.
+8. Ejecute el SQL necesario utilizando el DAO (objeto de acceso a la base de datos) de la clase de entidad. 
+   En su mayoría, puede usar el mismo SQL que se utilizó para agregar el campo al backend de SORMAS. El nombre de la columna debe coincidir con el nombre del campo en la clase de entidad (no todo en minúsculas).
    ```   
 	getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN soreThroat varchar(255);");
    ```   
 					
-The SORMAS app has separate fragments used for read and edit activities. Each fragment is split into the xml layout file and the java class containing it's logic.
+La aplicación de SORMAS tiene fragmentos separados que se utilizan para actividades de lectura y edición. Cada fragmento se divide en el archivo de diseño xml y la clase java que contiene su lógica.
 
-9. Identify the edit fragment layout xml file where the field needs to be added. E.g. /res/layout/fragment_symptoms_edit_layout.xml
-10. Add the field to the layout. See the existing fields for reference. Our custom Android components automatically add captions and descriptions to the field.
+9. Identifique el archivo de diseño xml del fragmento de edición donde se debe agregar el campo. Por ejemplo, /res/layout/fragment_symptoms_edit_layout.xml
+10. Agregue el campo al diseño. Use los campos existentes como referencia. Nuestros componentes personalizados de Android agregan automáticamente títulos y descripciones al campo.
     ```
     <de.symeda.sormas.app.component.controls.ControlSwitchField
         android:id="@+id/symptoms_soreThroat"
@@ -160,11 +160,11 @@ The SORMAS app has separate fragments used for read and edit activities. Each fr
         app:value="@={data.soreThroat}"
         style="@style/ControlSingleColumnStyle" />
     ```
-    Note that this comes with automatic data-binding. Use "@={...}" for edit fields and "@{...}" for read fields.
-11. Identify the edit fragment java class. E.g. SymptomsEditFragment.java
-12. Add needed field initializations to the existing onAfterLayoutBinding method. If necessary you can prepare any data in the prepareFragmentData method, while the fragment is still loading.
-   Since there are many use cases please have a look at the existing classes.
-13. Do the same for the read fragment and possibly also create fragment.
-14. Finally have a try in the app to check if everything is working as expected. Make sure data entered on the Android device is properly synchronized and also appears on the server.
+    Tenga en cuenta que esto viene con vinculación de datos automática. Utilice "@={...}" para campos de edición y "@{...}" para campos de lectura.
+11. Identifique la clase java del fragmento de edición. Por ejemplo, SíntomasEditFragment.java
+12. Agregue las inicializaciones de campo necesarias al método onAfterLayoutBinding existente. Si es necesario, puede preparar los datos en el método prepareFragmentData, mientras el fragmento todavía se está cargando.
+   Dado que hay muchos casos de uso, revise las clases existentes.
+13. Haga lo mismo con el fragmento de lectura, y posiblemente también cree el fragmento.
+14. Finalmente, pruebe la aplicación para verificar si todo funciona como se espera. Asegure que los datos ingresados ​​en el dispositivo Android son sincronizados correctamente y también aparecen en el servidor.
 
-Now you are done :-)
+Ahora ha terminado :-)
