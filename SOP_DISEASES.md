@@ -1,69 +1,69 @@
-# POE para agregar nuevas enfermedades a SORMAS
-Este archivo define el POE (Procedimiento operativo estándar) que se debe seguir al solicitar que el equipo de desarrollo central agregue nuevas enfermedades al sistema. Responder a todas las preguntas de esta guía asegurará que podamos integrar nuevas enfermedades en SORMAS lo más rápido posible.
+# SOP for Adding New Diseases to SORMAS
+This file defines the SOP (Standard Operating Procedure) that should be followed when requesting new diseases to be added to the system by the core development team. Answering all the questions asked in this guide will make sure that we will be able to integrate new diseases into SORMAS as quickly as possible.
 
-## Contenido
-1. [Descargar el diccionario de datos](#step-1-download-the-data-dictionary)
-2. [Definir los detalles básicos de la enfermedad](#step-2-define-basic-disease-details)
-3. [Definir campos de caso existentes](#step-3-define-existing-case-fields)
-4. [Definir campos de persona existentes](#step-4-define-existing-person-fields)
-5. [Definir los síntomas relevantes](#step-5-define-the-relevant-symptoms)
-6. [Definir los datos epidemiológicos relevantes](#step-6-define-the-relevant-epidemiological-data)
-7. [Definir las condiciones de salud](#step-7-define-health-conditions)
-8. [Definir nuevos campos en otras áreas](#step-8-define-new-fields-in-other-areas)
-9. [Proporcionar criterios de clasificación de casos](#step-9-provide-case-classification-criteria)
-10. [Proporcionar información adicional](#step-10-provide-additional-information)
-11. [Enviar su definición de enfermedad a los desarrolladores de SORMAS](#step-11-send-your-disease-definition-to-the-sormas-developers)
+## Content
+1. [Download the Data Dictionary](#step-1-download-the-data-dictionary)
+2. [Define Basic Disease Details](#step-2-define-basic-disease-details)
+3. [Define Existing Case Fields](#step-3-define-existing-case-fields)
+4. [Define Existing Person Fields](#step-4-define-existing-person-fields)
+5. [Define the Relevant Symptoms](#step-5-define-the-relevant-symptoms)
+6. [Define the Relevant Epidemiological Data](#step-6-define-the-relevant-epidemiological-data)
+7. [Define Health Conditions](#step-7-define-health-conditions)
+8. [Define New Fields in Other Areas](#step-8-define-new-fields-in-other-areas)
+9. [Provide Case Classification Criteria](#step-9-provide-case-classification-criteria)
+10. [Provide Additional Information](#step-10-provide-additional-information)
+11. [Send Your Disease Definition to the SORMAS Developers](#step-11-send-your-disease-definition-to-the-sormas-developers)
 
-## Guía
-### Paso 1: Descargar el diccionario de datos
-Descargue el [Diccionario de datos](https://github.com/hzi-braunschweig/SORMAS-Project/raw/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx) más reciente de este repositorio y ábralo. Nunca utilice una versión del Diccionario de datos que haya descargado anteriormente, ya que es muy probable que su contenido haya cambiado en el ínterin.
+## Guide
+### Step 1: Download the Data Dictionary
+Download the latest [Data Dictionary](https://github.com/hzi-braunschweig/SORMAS-Project/raw/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx) from this repository and open it. Please never use a version of the Data Dictionary that you downloaded earlier as it is very likely that its contents have changed in the meantime.
 
-Utilizará el Diccionario de datos para definir todos los detalles de la nueva enfermedad. Asegúrese de marcar cada adición o cambio (por ejemplo, coloreando el texto o el fondo de la fila en un rojo sutil) para que no perdamos la información que ha proporcionado.
+You will use the Data Dictionary to define all the details of the new disease. Please make sure to mark every addition or change (e.g. by colorizing the text or background of the row in a subtle red) so we don't miss any of the information you have provided.
 
-### Paso 2: Definir los detalles básicos de la enfermedad
-Abra la pestaña **Case** del Diccionario de datos y desplácese hacia abajo hasta las tablas que tienen un fondo azul. Estas tablas definen *enumeraciones*, que son básicamente tipos de datos con valores fijos. Los ejemplos incluyen las diferentes clasificaciones de un caso, el género de una persona, o las enfermedades que se utilizan en SORMAS. Busque la tabla de enumeración **Disease** (consulte la columna *Type*) y agregue una nueva fila. Ingrese los siguientes detalles:
+### Step 2: Define Basic Disease Details
+Open the **Case** tab of the Data Dictionary and scroll down to the tables that have a blue background. These tables define *enumerations*, which are basically data types with fixed values. Examples include the different case classifications, the gender of a person or the diseases that are used in SORMAS. Find the **Disease** enumeration table (refer to the *Type* column) and add a new row to it. Enter the following details:
 
-* El **nombre de la enfermedad** en la columna *Caption*
-* Opcionalmente, si la enfermedad tiene un nombre largo, un **nombre corto o abreviatura** en la columna *Short*
+* The **name of the disease** in the *Caption* column
+* Optionally, if the disease has a long name, a **short name or abbreviation** in the *Short* column
 
-Utilice la columna *Description* para responder las siguientes preguntas:
+Use the *Description* column to answer the following question(s):
 
-* ¿Tiene la enfermedad **seguimiento de contactos**?
-  * En caso afirmativo, ¿durante **cuántos días** se debe realizar el seguimiento de contactos?
+* Does the disease have **contact follow-up**?
+  * If yes, for **how many days** should contact follow-up be done?
 
-### Paso 3: Definir campos de caso existentes
-Mire las filas en la primera tabla de la pestaña **Case** (que tiene un fondo gris). Esta tabla define todos los campos que se muestran en la pestaña *Información del caso* en la aplicación SORMAS. La columna *Caption* define el nombre del campo tal como se muestra en la interfaz de usuario, mientras que la columna *Diseases* especifica qué enfermedades utilizan este campo. Agregue el nombre (o, si está disponible, el nombre corto) de su nueva enfermedad en la columna "New disease" de cada fila que represente un campo que sea relevante para su nueva enfermedad y coloree.
+### Step 3: Define Existing Case Fields
+Look through the rows in the first table of the **Case** tab (which has a grey background). This table defines all the fields that are displayed in the *Case Information* tab in the SORMAS application. The *Caption* column defines the name of the field as it is displayed in the user interface, while the *Diseases* column specifies which diseases use this field. Please add the name (or, if available, short name) of your new disease to the "New disease" column of every row that represents a field that is relevant for it and colorize it.
 
-### Paso 4: Definir campos de persona existentes
-Abra la pestaña **Person** y repita el paso 3 para la primera tabla que contiene los campos que definen los detalles de una persona en SORMAS.
+### Step 4: Define Existing Person Fields
+Open the **Person** tab and repeat step 3 for the first table containing the fields that define the details of a person in SORMAS.
 
-### Paso 5: Definir los síntomas relevantes
-Abra la pestaña **Symptoms** que enumera todos los síntomas que se utilizan actualmente en SORMAS. Esta es una lista muy larga y tendrá que revisar cada fila y definir si este síntoma es relevante para su nueva enfermedad o no. 
+### Step 5: Define the Relevant Symptoms
+Open the **Symptoms** tab which lists all the symptoms that are currently used in SORMAS. This is a very long list and you will have to go through every single row and define whether this symptom should be tracked for your new disease or not. 
 
-Es posible que su nueva enfermedad tenga uno o más síntomas que actualmente no forman parte de SORMAS. En ese caso, debe agregar una nueva fila para cada uno de estos síntomas al final de la tabla y proporcionar el **nombre del síntoma** en la columna *Caption*.
+It's possible that your new disease uses one or more symptoms that are currently not part of SORMAS. In that case, you need to add a new row for each of these symptoms to the bottom of the table and provide the **name of the symptom** in the *Caption* column.
 
-La mayoría de los síntomas en SORMAS son simples campos *Sí/No/Desconocido* donde *Sí* significa que el síntoma está presente, *No* que el síntoma no está presente, y *Desconocido* que no hay información sobre si el síntoma está presente o no. Si su síntoma puede definirse con este patrón, no tiene que especificar nada más. Sin embargo, si su síntoma es más complejo (por ejemplo, hay una serie de valores predefinidos entre los que el usuario debe elegir), proporcione todos los detalles necesarios sobre cómo los usuarios deben especificar el síntoma en la columna *Description*.
+Most symptoms in SORMAS are simple *Yes/No/Unknown* fields where *Yes* means that the symptom is present, *No* that the symptom is not present and *Unknown* that there is no information about whether the symptom is present or not. If your symptom can simply be defined by this pattern, you don't have to specify anything else. However, if your symptom is more complex (e.g. there are a number of pre-defined values that the user should choose from), please provide all the necessary details about how the symptom should be specified by users in the *Description* column.
 
-### Paso 6: Definir los datos epidemiológicos relevantes
-Abra la pestaña **Epidemiological data** que enumera todos los campos que se utilizan para recolectar información sobre los antecedentes epidemiológicos del caso, por ejemplo, si estuvo presente en entierros, tuvo contacto con un caso confirmado o con animales. Repita el paso 3 para todas las filas de la primera tabla y agregue filas nuevas si su nueva enfermedad requiere información que no se encuentra actualmente en SORMAS. Dado que es probable que los campos nuevos de esta pestaña sean más complejos que los síntomas básicos, asegúrese de definir la mayor cantidad de información posible sobre cómo deberían funcionar en la columna *Description*.
+### Step 6: Define the Relevant Epidemiological Data
+Open the **Epidemiological data** tab which lists all fields that are used to collect information about the epidemiological background of the case, e.g. whether they visited burials, had contact with a confirmed case or animals. Repeat step 3 for all rows in the first table, and add new rows if your new disease requires information that is not currently collected within SORMAS. As new fields in this tab are likely to be more complex than basic symptoms, make sure to define as much information about how they should function in the *Description* column.
 
-### Paso 7: Definir las condiciones de salud
-Abra la pestaña **Health conditions** que contiene una lista de condiciones preexistentes que no son síntomas de la enfermedad, pero siguen siendo relevantes, especialmente para la gestión de casos en un hospital. Repita el paso 3 para todas las filas de la primera tabla y agregue nuevas filas si existen condiciones de salud relevantes para su nueva enfermedad que aún no forman parte de SORMAS. Como siempre con los campos nuevos, asegúrese de proporcionar todos los detalles relevantes en la columna *Description*.
+### Step 7: Define Health Conditions
+Open the **Health conditions** tab which contains a list of pre-existing conditions that are not symptoms of the disease, but are still relevant especially for case management purposes in a hospital. Repeat step 3 for all rows in the first table, and add new rows if there are health conditions relevant for your new disease that are not part of SORMAS yet. As always with new fields, make sure to provide all relevant details in the *Description* column.
 
-### Paso 8: Definir nuevos campos en otras áreas
-Es posible que su enfermedad requiera que se recolecte más información que aún no es compatible con SORMAS, por ejemplo, nuevos detalles sobre la persona, información específica sobre su hospitalización, o incluso campos muy importantes que debieran ir directamente a la información del caso. Puede emplear el mismo proceso que utilizó para definir nuevos campos de síntomas, condiciones de salud, o datos epidemiológicos abriendo la pestaña en cuestión y agregando nuevas filas a la primera tabla. 
-
----
-
-En este punto, ha terminado todas las definiciones necesarias en el Diccionario de datos. Guarde su trabajo y prepare un correo electrónico con el archivo del Diccionario de datos adjunto. Sin embargo, no envíe este correo electrónico antes de seguir los pasos restantes, ya que todavía hay algunos detalles necesarios para completar la especificación de su nueva enfermedad.
+### Step 8: Define New Fields in Other Areas
+It is possible that your disease requires further information to be collected that is not supported by SORMAS yet, e.g. new details about the person, specific information about its hospitalization, or even very important fields that should directly go into the case information. You can use the same process you used to define new symptoms, health conditions or epidemiological data fields by opening the tab in question and adding new rows to the topmost table. 
 
 ---
 
-### Paso 9: Proporcionar criterios de clasificación de casos
-De manera óptima, al definir una nueva enfermedad, también debe especificar los criterios que SORMAS debe utilizar para clasificar automáticamente el caso como sospechoso, probable o confirmado. Para hacer esto de una manera que sea compatible con el sistema que usamos, necesitará acceso a un sistema de SORMAS en ejecución (por ejemplo, el servidor experimental que puede encontrar en https://sormas.org). Inicie sesión como cualquier usuario (por ejemplo, el usuario predeterminado en el servidor experimental), abra la sección *About* en el menú principal y abra el documento *Case Classification Rules (HTML)*. Defina los criterios de clasificación de forma similar al sistema utilizado en este documento. Si está disponible, también puede enviarnos un documento oficial de la OMS o su CCE nacional que especifique los criterios de clasificación.
+At this point, you have finished all the necessary definitions in the Data Dictionary. Save your work and prepare an email with the Data Dictionary file attached to it. Don't send this email before working through the remaining steps though, as there are still a few details that are needed in order to finish the specification of your new disease.
 
-### Paso 10: Proporcionar información adicional
-Si todavía hay cosas que son necesarias para implementar correctamente la nueva enfermedad en SORMAS (es posible que nos solicite crear un área completamente nueva para los casos, o puede haber mecánicas muy complejas que necesitan muchas más especificaciones), indíquenos tantos detalles sobre ellas como sea posible. Simplemente escriba toda esa información en su correo electrónico.
+---
 
-### Paso 11: Enviar su definición de enfermedad al equipo de SORMAS
-Envíe su correo electrónico con el archivo actualizado del Diccionario de datos, los criterios de clasificación de casos, y sus notas adicionales a sormas@helmholtz-hzi.de. ¡Felicitaciones, su trabajo está hecho! Ahora deberíamos tener toda la información que necesitamos para integrar su enfermedad en SORMAS. Si hay algo que no está claro o si necesitamos detalles adicionales, nos pondremos en contacto con usted lo antes posible. ¡Muchas gracias por contribuir a SORMAS y ayudarnos a combatir la propagación de tantas enfermedades como sea posible!
+### Step 9: Provide Case Classification Criteria
+Optimally, when defining a new disease, you should also specify the criteria SORMAS should use to automatically classify the case as suspect, probable or confirmed. In order to do this in a way that is compatible with the system we use, you will need access to a running SORMAS system (e.g. the play server you can find at https://sormas.org). Log in as any user (e.g. the default user on the play server), open the *About* section from the main menu, and open the *Case Classification Rules (HTML)* document. Please define the classification criteria in a way that is similar to the system used in this document. If available, you can also send us an official document by WHO or your national CDC that specifies the classification criteria.
+
+### Step 10: Provide Additional Information
+If there are still things that are necessary in order to properly implement the new disease in SORMAS (you might require us to create a whole new area for cases or there might be very complex mechanics that need a lot more specification), please give us as many details about them as possible. Just put all this information into your email.
+
+### Step 11: Send Your Disease Definition to the SORMAS Team
+Send your email containing the updated Data Dictionary file, the case classification criteria and your additional notes to sormas@helmholtz-hzi.de. Congratulations, your work is done! We should now have all the information we need in order to integrate your disease into SORMAS. If there is anything that is unclear or if we need additional details, we will get in touch with you as soon as possible. Thank you so much for contributing to SORMAS and helping us to fight the spread of as many diseases as possible!
