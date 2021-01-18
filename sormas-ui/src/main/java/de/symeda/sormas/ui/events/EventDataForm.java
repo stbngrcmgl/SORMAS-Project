@@ -40,6 +40,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -76,19 +78,20 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
-			fluidRowLocs(EventDto.EVENT_STATUS) +
+			fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
 			fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS) +
 			fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
-			fluidRowLocs(EventDto.EXTERNAL_ID, "") +
+			fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
 			fluidRowLocs(EventDto.EVENT_TITLE) +
 			fluidRowLocs(EventDto.EVENT_DESC) +
-			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
+			fluidRowLocs(EventDto.DISEASE_TRANSMISSION_MODE, EventDto.NOSOCOMIAL) +
 
 			loc(INFORMATION_SOURCE_HEADING_LOC) +
 			fluidRowLocs(EventDto.SRC_TYPE, "") +
+			fluidRowLocs(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE, EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS) +
 			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
 			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
 
@@ -96,7 +99,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.SRC_MEDIA_DETAILS) +
 
 			loc(LOCATION_HEADING_LOC) +
+			fluidRowLocs(EventDto.TRANSREGIONAL_OUTBREAK, "") +
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
+			fluidRowLocs(EventDto.MEANS_OF_TRANSPORT, EventDto.MEANS_OF_TRANSPORT_DETAILS) + 
+			fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.SEAT_NUMBER, 4, EventDto.TRAVEL_DATE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
@@ -151,6 +157,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addDiseaseField(EventDto.DISEASE, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		addFields(EventDto.EXTERNAL_ID);
+		addFields(EventDto.EXTERNAL_TOKEN);
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
 		DateField endDate = addField(EventDto.END_DATE, DateField.class);
@@ -158,6 +165,15 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
+
+		addField(EventDto.RISK_LEVEL);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.RISK_LEVEL),
+			EventDto.EVENT_STATUS,
+			Collections.singletonList(EventStatus.CLUSTER),
+			true);
+
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);
 		addField(EventDto.EVENT_INVESTIGATION_END_DATE, DateField.class);
@@ -174,13 +190,51 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		descriptionField.setDescription(
 			I18nProperties.getPrefixDescription(EventDto.I18N_PREFIX, EventDto.EVENT_DESC, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
+		addField(EventDto.DISEASE_TRANSMISSION_MODE, ComboBox.class);
 		addField(EventDto.NOSOCOMIAL, NullableOptionGroup.class);
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
+
+		ComboBox meansOfTransport = addField(EventDto.MEANS_OF_TRANSPORT);
+		TextField connectionNumber = addField(EventDto.CONNECTION_NUMBER);
+		TextField seatNumber = addField(EventDto.SEAT_NUMBER);
+		DateField travelDate = addField(EventDto.TRAVEL_DATE);
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.MEANS_OF_TRANSPORT),
+			EventDto.TYPE_OF_PLACE,
+			Collections.singletonList(TypeOfPlace.MEANS_OF_TRANSPORT),
+			true);
+
+		TextField meansOfTransportDetails = addField(EventDto.MEANS_OF_TRANSPORT_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.MEANS_OF_TRANSPORT_DETAILS),
+			EventDto.MEANS_OF_TRANSPORT,
+			Collections.singletonList(MeansOfTransport.OTHER),
+			true);
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(EventDto.CONNECTION_NUMBER, EventDto.SEAT_NUMBER, EventDto.TRAVEL_DATE),
+			EventDto.TYPE_OF_PLACE,
+			Collections.singletonList(TypeOfPlace.MEANS_OF_TRANSPORT),
+			true);
+
+		getField(EventDto.MEANS_OF_TRANSPORT).addValueChangeListener(e -> {
+			if (e.getProperty().getValue() == MeansOfTransport.PLANE) {
+				getField(EventDto.CONNECTION_NUMBER).setCaption(I18nProperties.getCaption(Captions.exposureFlightNumber));
+			} else {
+				getField(EventDto.CONNECTION_NUMBER).setCaption(I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.CONNECTION_NUMBER));
+			}
+		});
+
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
+		addField(EventDto.TRANSREGIONAL_OUTBREAK, NullableOptionGroup.class);
 
 		ComboBox srcType = addField(EventDto.SRC_TYPE);
 
@@ -193,6 +247,22 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextField srcMediaName = addField(EventDto.SRC_MEDIA_NAME, TextField.class);
 		TextArea srcMediaDetails = addField(EventDto.SRC_MEDIA_DETAILS, TextArea.class);
 		srcMediaDetails.setRows(4);
+
+		ComboBox srcInstitutionalPartnerType = addField(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE),
+			EventDto.SRC_TYPE,
+			Collections.singletonList(EventSourceType.INSTITUTIONAL_PARTNER),
+			true);
+
+		TextField srcInstitutionalPartnerTypeDetails = addField(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Collections.singletonList(EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS),
+			EventDto.SRC_INSTITUTIONAL_PARTNER_TYPE,
+			Collections.singletonList(InstitutionalPartnerType.OTHER),
+			true);
 
 		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
 			.setCaption(null);
@@ -232,7 +302,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			I18nProperties.getCaption(Captions.Event_startDate));
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Collections.singletonList(EventDto.NOSOCOMIAL),
+			Arrays.asList(EventDto.NOSOCOMIAL, EventDto.TRANSREGIONAL_OUTBREAK, EventDto.DISEASE_TRANSMISSION_MODE),
 			EventDto.EVENT_STATUS,
 			Collections.singletonList(EventStatus.CLUSTER),
 			true);
@@ -253,6 +323,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Collections.singletonList(TypeOfPlace.OTHER), true);
 		setTypeOfPlaceTextRequirement();
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
+		locationForm.setFacilityFieldsVisible(getField(EventDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
+		typeOfPlace.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
 
 		districtField.addValueChangeListener(e -> {
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
@@ -264,8 +336,15 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			startDate,
 			endDate,
 			typeOfPlace,
+			meansOfTransport,
+			meansOfTransportDetails,
+			connectionNumber,
+			seatNumber,
+			travelDate,
 			surveillanceOfficerField,
 			srcType,
+			srcInstitutionalPartnerType,
+			srcInstitutionalPartnerTypeDetails,
 			srcFirstName,
 			srcLastName,
 			srcTelNo,

@@ -57,6 +57,8 @@
 		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo</class>
 		<class>de.symeda.sormas.backend.document.Document</class>
 		<class>de.symeda.sormas.backend.exposure.Exposure</class>
+		<class>de.symeda.sormas.backend.common.messaging.ManualMessageLog</class>
+		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

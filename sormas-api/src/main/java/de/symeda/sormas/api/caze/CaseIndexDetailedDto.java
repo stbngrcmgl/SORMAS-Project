@@ -30,6 +30,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String LATEST_EVENT_ID = "latestEventId";
 	public static final String LATEST_EVENT_STATUS = "latestEventStatus";
 	public static final String LATEST_EVENT_TITLE = "latestEventTitle";
+	public static final String LATEST_SAMPLE_DATE_TIME = "latestSampleDateTime";
+	public static final String SAMPLE_COUNT = "sampleCount";
+	public static final String SYMPTOM_ONSET_DATE = "symptomOnsetDate";
 
 	@PersonalData
 	@SensitiveData
@@ -53,11 +56,14 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private String latestEventId;
 	private String latestEventTitle;
 	private EventStatus latestEventStatus;
+	private Date latestSampleDateTime;
+	private Long sampleCount;
+	private Date symptomOnsetDate;
 
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
-	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName,
+	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName,
 								Disease disease, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 								PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate,
 								String regionUuid, String districtUuid, String districtName, String communityUuid,
@@ -66,9 +72,10 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId,
 								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								String reportingUserFirstName, String reportingUserLastName, int visitCount, long eventCount) {
+								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
+								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
 
-		super(id, uuid, epidNumber, externalID, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
+		super(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
@@ -83,6 +90,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 		this.eventCount = eventCount;
+		this.latestSampleDateTime = latestSampleDateTime;
+		this.sampleCount = sampleCount;
+		this.symptomOnsetDate = symptomOnsetDate;
 	}
 
 	public String getCity() {
@@ -143,5 +153,17 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public void setLatestEventStatus(EventStatus latestEventStatus) {
 		this.latestEventStatus = latestEventStatus;
+	}
+
+	public Date getLatestSampleDateTime() {
+		return latestSampleDateTime;
+	}
+
+	public Long getSampleCount() {
+		return sampleCount;
+	}
+
+	public Date getSymptomOnsetDate() {
+		return symptomOnsetDate;
 	}
 }

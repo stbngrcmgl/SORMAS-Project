@@ -33,6 +33,7 @@ import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.action.ActionStatEntry;
+import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRight;
@@ -76,7 +77,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
-		target.setReplyingUser(userService.getByReferenceDto(source.getReplyingUser()));
+		target.setLastModifiedBy(userService.getByReferenceDto(source.getLastModifiedBy()));
 		target.setReply(source.getReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setTitle(source.getTitle());
@@ -89,6 +90,7 @@ public class ActionFacadeEjb implements ActionFacade {
 			target.setStatusChangeDate(source.getStatusChangeDate());
 		}
 		target.setActionStatus(source.getActionStatus());
+		target.setActionMeasure(source.getActionMeasure());
 
 		target.setActionContext(source.getActionContext());
 		if (source.getActionContext() != null) {
@@ -123,13 +125,14 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setReply(source.getReply());
-		target.setReplyingUser(UserFacadeEjb.toReferenceDto(source.getReplyingUser()));
+		target.setLastModifiedBy(UserFacadeEjb.toReferenceDto(source.getLastModifiedBy()));
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
 		target.setStatusChangeDate(source.getStatusChangeDate());
 		target.setActionContext(source.getActionContext());
 		target.setActionStatus(source.getActionStatus());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setActionMeasure(source.getActionMeasure());
 
 		return target;
 	}
@@ -198,6 +201,11 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public List<EventActionIndexDto> getEventActionList(EventCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		return actionService.getEventActionIndexList(criteria, first, max, sortProperties);
+	}
+
+	@Override
+	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
+		return actionService.getEventActionExportList(criteria, first, max);
 	}
 
 	@Override
