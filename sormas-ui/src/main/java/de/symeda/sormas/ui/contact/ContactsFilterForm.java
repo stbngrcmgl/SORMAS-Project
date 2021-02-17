@@ -50,6 +50,7 @@ import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
@@ -84,6 +85,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.WITH_EXTENDED_QUARANTINE,
 			ContactCriteria.WITH_REDUCED_QUARANTINE,
 			ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE,
+			ContactCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
 			ContactCriteria.INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS)
 
 		+ loc(WEEK_AND_DATE_FILTER);
@@ -297,6 +299,15 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				null,
 				CHECKBOX_STYLE));
 
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ContactCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
+				I18nProperties.getCaption(Captions.contactOnlyFromOtherInstances),
+				null,
+				CHECKBOX_STYLE));
+
 		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
@@ -347,6 +358,19 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			} else {
 				enableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
 			}
+			break;
+		}
+		case ContactCriteria.BIRTHDATE_MM: {
+			Integer birthMM = (Integer) event.getProperty().getValue();
+
+			ComboBox birthDayDD = getField(ContactCriteria.BIRTHDATE_DD);
+			birthDayDD.setEnabled(birthMM != null);
+			FieldHelper.updateItems(
+				birthDayDD,
+				DateHelper.getDaysInMonth(
+					(Integer) getField(ContactCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(ContactCriteria.BIRTHDATE_YYYY).getValue()));
+
 			break;
 		}
 		}
@@ -510,11 +534,13 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	private void populateSurveillanceOfficersForDistrict(DistrictReferenceDto districtReferenceDto) {
 		if (districtReferenceDto != null) {
 			List<UserReferenceDto> items =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.SURVEILLANCE_OFFICER);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.CONTACT_OFFICER);
 			populateSurveillanceOfficers(items);
 		} else {
 			final ComboBox regionField = getField(ContactCriteria.REGION);
-			populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+			if (regionField != null) {
+				populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+			}
 		}
 	}
 
@@ -525,6 +551,6 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
-		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.SURVEILLANCE_OFFICER);
+		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.CONTACT_OFFICER);
 	}
 }

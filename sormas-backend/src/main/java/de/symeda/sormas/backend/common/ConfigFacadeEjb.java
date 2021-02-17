@@ -105,6 +105,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD = "interface.patientdiary.defaultuser.password";
 
+	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
+	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
+
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
@@ -126,6 +129,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SURVNET_GATEWAY_URL = "survnet.url";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
+
+	private static final String CREATE_DEFAULT_USERS = "createDefaultUsers";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -535,6 +540,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
 	}
 
+	public boolean isCreateDefaultUsers() {
+		return getBoolean(CREATE_DEFAULT_USERS, true);
+	}
+
+	public String getDocgenerationNullReplacement() {
+		return getProperty(DOCGENERATION_NULL_REPLACEMENT, "./.");
+	}
+
 	@LocalBean
 	@Stateless
 	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
@@ -544,6 +557,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isSmsServiceSetUp() {
 		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
+	}
+
+	@Override
+	public String getDemisJndiName() {
+		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
 	}
 
 }

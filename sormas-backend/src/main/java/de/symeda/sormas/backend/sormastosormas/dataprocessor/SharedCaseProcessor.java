@@ -31,8 +31,6 @@ import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -40,7 +38,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedCaseData;
 import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
@@ -54,12 +51,11 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 	@EJB
 	private UserService userService;
 	@EJB
-	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
-	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private SharedDataProcessorHelper dataProcessorHelper;
 
+	@Override
 	public ProcessedCaseData processSharedData(SormasToSormasCaseDto sharedCase) throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
@@ -113,14 +109,18 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 			caze.getCommunity(),
 			caze.getFacilityType(),
 			caze.getHealthFacility(),
-			caze.getPointOfEntry());
+			caze.getHealthFacilityDetails(),
+			caze.getPointOfEntry(),
+			caze.getPointOfEntryDetails());
 
 		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
 			caze.setRegion(infrastructureData.getRegion());
 			caze.setDistrict(infrastructureData.getDistrict());
 			caze.setCommunity(infrastructureData.getCommunity());
 			caze.setHealthFacility(infrastructureData.getFacility());
+			caze.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
 			caze.setPointOfEntry(infrastructureData.getPointOfEntry());
+			caze.setPointOfEntryDetails(infrastructureData.getPointOfEntryDetails());
 		});
 
 		ValidationErrors embeddedObjectErrors = processEmbeddedObjects(caze);
@@ -142,6 +142,8 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 					ph.getCommunity(),
 					FacilityType.HOSPITAL,
 					ph.getHealthFacility(),
+					ph.getHealthFacilityDetails(),
+					null,
 					null);
 
 				dataProcessorHelper.handleInfraStructure(
@@ -153,6 +155,7 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 						ph.setDistrict(phInfrastructure.getDistrict());
 						ph.setCommunity(phInfrastructure.getCommunity());
 						ph.setHealthFacility(phInfrastructure.getFacility());
+						ph.setHealthFacilityDetails(phInfrastructure.getFacilityDetails());
 					});
 			});
 		}
@@ -163,10 +166,7 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 			DataHelper.Pair<InfrastructureData, List<String>> rashExposureInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
 				maternalHistory.getRashExposureRegion(),
 				maternalHistory.getRashExposureDistrict(),
-				maternalHistory.getRashExposureCommunity(),
-				null,
-				null,
-				null);
+				maternalHistory.getRashExposureCommunity());
 
 			dataProcessorHelper.handleInfraStructure(
 				rashExposureInfrastructureAndErrors,
@@ -189,16 +189,7 @@ public class SharedCaseProcessor implements SharedDataProcessor<SormasToSormasCa
 
 		for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : associatedContacts) {
 			ContactDto contact = associatedContact.getContact();
-			ValidationErrors contactErrors = new ValidationErrors();
-
-			if (contactFacade.exists(contact.getUuid())) {
-				contactErrors
-					.add(I18nProperties.getCaption(Captions.Contact), I18nProperties.getValidationError(Validations.sormasToSormasContactExists));
-				continue;
-			}
-
-			ValidationErrors contactProcessingErrors = dataProcessorHelper.processContactData(contact, associatedContact.getPerson());
-			contactErrors.addAll(contactProcessingErrors);
+			ValidationErrors contactErrors = dataProcessorHelper.processContactData(contact, associatedContact.getPerson());
 
 			if (contactErrors.hasError()) {
 				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);

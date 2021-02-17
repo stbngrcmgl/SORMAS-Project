@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -83,7 +82,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	@Override
 	public UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto) {
 
-		UserRoleConfig entity = fromDto(dto);
+		UserRoleConfig entity = fromDto(dto, true);
 		userRoleConfigService.ensurePersisted(entity);
 		resetUserRoleRightsCache();
 		return toDto(entity);
@@ -139,21 +138,14 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		return userRoleRightsCache;
 	}
 
-	public UserRoleConfig fromDto(UserRoleConfigDto source) {
+	public UserRoleConfig fromDto(UserRoleConfigDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		UserRoleConfig target = userRoleConfigService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new UserRoleConfig();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		UserRoleConfig target =
+			DtoHelper.fillOrBuildEntity(source, userRoleConfigService.getByUuid(source.getUuid()), UserRoleConfig::new, checkChangeDate);
 
 		target.setUserRole(source.getUserRole());
 		target.setUserRights(new HashSet<UserRight>(source.getUserRights()));
@@ -181,4 +173,20 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	public static class UserRoleConfigFacadeEjbLocal extends UserRoleConfigFacadeEjb {
 
 	}
+
+	@Override
+	public Set<UserRole> getEnabledUserRoles() {
+
+		Set<UserRole> userRolesList = Arrays.stream(UserRole.values()).collect(Collectors.toSet());
+
+		List<UserRoleConfig> userRoleConfigList = userRoleConfigService.getAll();
+
+		for (UserRoleConfig userRoleConfig : userRoleConfigList) {
+			if (!userRoleConfig.isEnabled()) {
+				userRolesList.remove(userRoleConfig.getUserRole());
+			}
+		}
+		return userRolesList;
+	}
+
 }

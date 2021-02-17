@@ -20,6 +20,7 @@ package de.symeda.sormas.ui;
 import de.symeda.sormas.ui.action.ActionController;
 import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.caze.CaseController;
+import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
@@ -28,6 +29,7 @@ import de.symeda.sormas.ui.customexport.CustomExportController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
+import de.symeda.sormas.ui.labmessage.LabMessageController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
@@ -65,6 +67,8 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final CampaignController campaignController;
 	private final SormasToSormasController sormasToSormasController;
 	private final CustomExportController customExportController;
+	private final LabMessageController labMessageController;
+	private final SurveillanceReportController surveillanceReportController;
 
 	public ControllerProvider() {
 		super();
@@ -91,6 +95,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		campaignController = new CampaignController();
 		sormasToSormasController = new SormasToSormasController();
 		customExportController = new CustomExportController();
+		labMessageController = new LabMessageController();
+		surveillanceReportController = new SurveillanceReportController();
 	}
 
 	protected static ControllerProvider get() {
@@ -183,5 +189,13 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static CustomExportController getCustomExportController() {
 		return get().customExportController;
+	}
+
+	public static LabMessageController getLabMessageController() {
+		return get().labMessageController;
+	}
+
+	public static SurveillanceReportController getSurveillanceReportController() {
+		return get().surveillanceReportController;
 	}
 }

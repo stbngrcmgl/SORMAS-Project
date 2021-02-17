@@ -80,13 +80,18 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
-		target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
+		target.setResponsibleUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getResponsibleUser()));
 
 		target.setEventLocation(locationHelper.fillOrCreateFromDto(target.getEventLocation(), source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setTravelDate(source.getTravelDate());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
@@ -108,6 +113,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEventUuid(source.getSuperordinateEvent() != null ? source.getSuperordinateEvent().getUuid() : null);
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
@@ -127,6 +133,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setNosocomial(source.getNosocomial());
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
 
 		target.setReportDateTime(source.getReportDateTime());
 
@@ -144,9 +152,18 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 			target.setEventLocation(null);
 		}
 
+		if (source.getSuperordinateEventUuid() != null) {
+			target.setSuperordinateEvent(new EventReferenceDto(source.getSuperordinateEventUuid()));
+		} else {
+			target.setSuperordinateEvent(null);
+		}
+
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setTravelDate(source.getTravelDate());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
@@ -162,11 +179,11 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
-		if (source.getSurveillanceOfficer() != null) {
-			User user = DatabaseHelper.getUserDao().queryForId(source.getSurveillanceOfficer().getId());
-			target.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
+		if (source.getResponsibleUser() != null) {
+			User user = DatabaseHelper.getUserDao().queryForId(source.getResponsibleUser().getId());
+			target.setResponsibleUser(UserDtoHelper.toReferenceDto(user));
 		} else {
-			target.setSurveillanceOfficer(null);
+			target.setResponsibleUser(null);
 		}
 
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());

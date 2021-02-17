@@ -51,6 +51,11 @@ public interface EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
+	List<EventParticipantListEntryDto> getListEntries(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer first,
+		Integer max);
+
 	EventParticipantDto getByUuid(String uuid);
 
 	void validate(EventParticipantDto eventParticipant);
@@ -73,4 +78,7 @@ public interface EventParticipantFacade {
 
 	List<EventParticipantExportDto> getExportList(EventParticipantCriteria eventParticipantCriteria, int first, int max, Language userLanguage);
 
+	List<EventParticipantDto> getByEventUuids(List<String> eventUuids);
+
+	List<SimilarEventParticipantDto> getMatchingEventParticipants(EventParticipantCriteria criteria);
 }

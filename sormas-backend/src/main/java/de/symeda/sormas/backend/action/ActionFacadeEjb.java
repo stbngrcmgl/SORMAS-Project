@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.action;
 
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -59,23 +58,13 @@ public class ActionFacadeEjb implements ActionFacade {
 	@EJB
 	private EventService eventService;
 
-	public Action fromDto(ActionDto source) {
+	public Action fromDto(ActionDto source, boolean checkChangeDate) {
 
 		if (source == null) {
 			return null;
 		}
 
-		boolean creation = false;
-		Action target = actionService.getByUuid(source.getUuid());
-		if (target == null) {
-			creation = true;
-			target = new Action();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+		Action target = DtoHelper.fillOrBuildEntity(source, actionService.getByUuid(source.getUuid()), Action::new, checkChangeDate);
 
 		target.setLastModifiedBy(userService.getByReferenceDto(source.getLastModifiedBy()));
 		target.setReply(source.getReply());
@@ -84,7 +73,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setDescription(source.getDescription());
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
-		if (target.getActionStatus() != source.getActionStatus() && !creation) {
+		if (target.getActionStatus() != source.getActionStatus() && target.getId() != null) {
 			target.setStatusChangeDate(new Date());
 		} else {
 			target.setStatusChangeDate(source.getStatusChangeDate());
@@ -117,9 +106,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		ActionDto target = new ActionDto();
 		Action source = action;
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setTitle(source.getTitle());
@@ -140,7 +127,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public ActionDto saveAction(ActionDto dto) {
 
-		Action ado = fromDto(dto);
+		Action ado = fromDto(dto, true);
 		actionService.ensurePersisted(ado);
 		return toDto(ado);
 	}

@@ -21,6 +21,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -50,6 +52,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -942,8 +945,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contact.setEpiData(epiData);
 		getContactFacade().saveContact(contact);
 
-		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
-		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
+		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		contactPerson.getAddress().setCity("City");
 		contactPerson.getAddress().setStreet("Test street");
 		contactPerson.getAddress().setHouseNumber("Test number");
@@ -1275,5 +1278,24 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
 		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));
+	}
+
+	@Test
+	public void testCreateWithoutUuid() {
+		RDCF rdcf = creator.createRDCF();
+
+		ContactDto contact = new ContactDto();
+		contact.setReportDateTime(new Date());
+		contact.setReportingUser(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference());
+		contact.setDisease(Disease.CORONAVIRUS);
+		contact.setPerson(creator.createPerson().toReference());
+		contact.setRegion(rdcf.region);
+		contact.setDistrict(rdcf.district);
+		contact.setHealthConditions(new HealthConditionsDto());
+
+		ContactDto savedContact = getContactFacade().saveContact(contact);
+
+		assertThat(savedContact.getUuid(), not(isEmptyOrNullString()));
+		assertThat(savedContact.getHealthConditions().getUuid(), not(isEmptyOrNullString()));
 	}
 }
