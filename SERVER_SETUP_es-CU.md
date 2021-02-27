@@ -75,9 +75,9 @@
 
 ## Servidor Keycloak
 
-De forma predeterminada, Keycloak se ejecuta como un contenedor Docker, pero se puede configurar de dos formas:
-* Como contenedor Docker
-* Como instalación independiente
+Keycloak se puede configurar de dos formas:
+* como contenedor de Docker (para usar el enfoque Keycloak solamente)
+* como instalación independiente (para desarrollar en Keycloak, por ejemplo, temas, SPIs)
 
 ### Keycloak como contenedor Docker
 *Para hacer solo cuando SORMAS ya está instalado en la máquina como una instalación independiente.*
@@ -88,7 +88,7 @@ De forma predeterminada, Keycloak se ejecuta como un contenedor Docker, pero se 
 * Servidor de SORMAS instalado
 * PostgreSQL instalado
 * Docker instalado
-* Abra y edite [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh) con los valores reales de su sistema
+* Abra y edite [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh) con los valores reales de su sistema *(en Windows utilice Git Bash)*.
 
 **Configuración**
 * Ejecute [keycloak-setup.sh](sormas-base/setup/keycloak/keycloak-setup.sh)
@@ -107,6 +107,8 @@ Configuración de Keycloak como instalación independiente [Guía de instalació
 * Configure Keycloak con la [Configuración de base de datos relacional](https://www.keycloak.org/docs/11.0/server_installation/#_database) de la base de datos PostgreSQL
 * Configure un usuario administrador
 * Copie el contenido de la carpeta `themes` en `${KEYCLOAK_HOME}/themes` [Desplegar temas](https://www.keycloak.org/docs/11.0/server_development/#deploying-themes)
+* Despliegue `sormas-keycloak-service-provider` [Usar Keycloak Deployer](https://www.keycloak.org/docs/11.0/server_development/#using-the-keycloak-deployer)
+* Actualice el archivo [SORMAS.json](sormas-base/setup/keycloak/SORMAS.json) reemplazando los siguientes marcadores de posición: `${SORMAS_SERVER_URL}`, `${KEYCLOAK_SORMAS_UI_SECRET}`, `${KEYCLOAK_SORMAS_BACKEND_SECRET}`, `${KEYCLOAK_SORMAS_REST_SECRET}`
 * Cree el ámbito de SORMAS importando [SORMAS.json](sormas-base/setup/keycloak/SORMAS.json), vea [Crear un nuevo ámbito](https://www.keycloak.org/docs/11.0/server_admin/#_create-realm)
 * Actualice los clientes `sormas-*` generando nuevos secretos para ellos
 * Actualice la configuración de correo electrónico del ámbito para permitir el envío de correos electrónicos a los usuarios
@@ -124,10 +126,23 @@ donde:
 * `${ASADMIN}` - representa la ubicación de `${PAYARA_HOME}\bin\asadmin`
 * `${KEYCLOAK_PORT}` - el puerto en que se ejecutará keycloak
 * `${KEYCLOAK_SORMAS_UI_SECRET}` - es el secreto generado en Keycloak para el cliente `sormas-ui`
-* `${KEYCLOAK_SORMAS_REST_SECRET}` - es el secreto generado en Keycloack para el cliente `sormas-rest`
-* `${KEYCLOAK_SORMAS_BACKEND_SECRET}` - es el secreto generado en Keycloack para el cliente `sormas-backend`
+* `${KEYCLOAK_SORMAS_REST_SECRET}` - es el secreto generado en Keycloak para el cliente `sormas-rest`
+* `${KEYCLOAK_SORMAS_BACKEND_SECRET}` - es el secreto generado en Keycloak para el cliente `sormas-backend`
 
 Luego actualice el archivo `sormas.properties` en el dominio de SORMAS con la propiedad `authentication.provider=KEYCLOAK`
+
+### Conectar Keycloak a una instancia de SORMAS que ya esté en ejecución
+
+*después de configurar Keycloak como una de las opciones descritas anteriormente*
+
+Si Keycloak es configurado junto a una instancia de SORMAS que ya está en ejecución, estos son los pasos a seguir para asegurar que los usuarios ya existentes puedan acceder al sistema:
+1. Cree manualmente un usuario administrador en Keycloak para el ámbito SORMAS [Creating a user](https://www.keycloak.org/docs/11.0/getting_started/index.html#creating-a-user) *(el nombre de usuario debe ser igual al nombre de usuario del administrador en SORMAS)*
+2. Inicie sesión en SORMAS y active el botón **Sincronizar usuarios** de la página **Usuarios**
+3. Esto sincronizará a los usuarios con Keycloak manteniendo sus contraseñas originales - consulte [Proveedor de servicios Keycloak de SORMAS](sormas-keycloak-service-provider/README.md) para obtener más información
+
+### Configuración de Keycloak
+
+Más información sobre la configuración predeterminada y cómo personalizar aquí [Keycloak](sormas-base/doc/keycloak.md)
 
 ## Configuración del servidor web
 

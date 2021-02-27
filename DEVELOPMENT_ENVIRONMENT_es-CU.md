@@ -22,7 +22,7 @@
   - **Windows**: Para entornos de prueba y desarrollo, sugerimos descargar y ejecutar el instalador de Java 11 **JDK** para sistemas cliente de 32 o 64 bits (según su sistema).
 
 ## Eclipse
-- Instale la versión más reciente de Eclipse
+- Instale la versión más reciente de Eclipse, la mejor opción es [Eclipse IDE for Enterprise Java Developers](https://www.eclipse.org/downloads/packages).
 - Establezca el JRE predeterminado de Eclipse como el Zulu Java SDK instalado: [Assigning the default JRE for the workbench ](https://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-assign_default_jre.htm)
 - Clone el repositorio SORMAS-Open e importe los proyectos a Eclipse
 	- Si utiliza Eclipse para clonar, seleccione "File -> Import -> Git -> Projects from Git", y continúe hasta que se le pida crear un nuevo proyecto a partir del repositorio clonado; haga clic en Cancel, y use "File -> Import -> Maven -> Existing Maven Projects" para importar los proyectos a su espacio de trabajo
@@ -51,7 +51,7 @@
 - Clone el repositorio SORMAS-Project y abra el proyecto en IntelliJ
 	- asegure que en "File -> Project Structure -> Modules" se reconozcan todos los módulos (excepto la aplicación de Android, que no debe agregarse), si no, agregue los módulos con +
 - Asegure que en "File -> Settings -> Plugins" las integraciones de Glassfish y Ant estén habilitadas (busque en la pestaña "Installed")
-- Instale el complemento Vaadin Designer
+- Instale el complemento Vaadin (¡no el complemento Vaadin Designer!)
 - Haga una copia de "build.properties.example", que está en "sormas-base", cámbiele el nombre a "build.properties", y establezca "glassfish.domain.root" como la ubicación del dominio sormas que está en la carpeta "glassfish/domains" dentro de la instalación de payara
 - Ejecute "Maven install" en el proyecto sormas-base
 - Agregue un servidor Payara a IntelliJ:

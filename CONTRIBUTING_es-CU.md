@@ -10,6 +10,8 @@
 
 Lea las siguientes orientaciones y sígalas al enviar nuevos problemas. Esto nos permite procesar su solicitud lo más rápido posible. Asegúrese de utilizar siempre las plantillas que se proporcionan automáticamente al crear un problema.
 
+Si desea reportar un **problema de seguridad**, siga nuestra guía para [*Divulgación responsable*](SECURITY.md).
+
 **Importante:** Siempre que cree un nuevo problema, **primero busque problemas similares en el repositorio**, para evitar duplicados. Puede hacerlo manualmente, o utilizando la funcionalidad de búsqueda del header y limitando sus resultados al repositorio de SORMAS.
 
 * [Informe de error](#bug-report)
@@ -108,6 +110,18 @@ Los tickets aprobados deben moverse manualmente de **Testing** a **Done*.
 El proyecto de GitHub se ha configurado para mover **automáticamente** los issues que se cierran a **Testing**, y los issues que se reabren a **In Progress**.
 
 El Development Team es responsable de mantener actualizados los tickets en este tablero, y de asignar el milestone apropiado en el que se va a publicar el trabajo.
+
+
+### Administrar dependencias
+
+Para administrar bibliotecas de Java como dependencias, Maven las administra y se enumeran en *sormas-base/pom.xml*.  El propósito de una administración centralizada es tener una visión general de las bibliotecas utilizadas y adaptarse a las nuevas versiones.
+
+1. **Módulos de Payara**: Provistos por Payara en *{payara-home}/glassfish/modules* y utilizados en esa versión por otras bibliotecas.
+2. **Bibliotecas de dominio**: Provistas en el dominio Payara bajo *{dominio-payara}/lib* para ser utilizables por artefactos desplegados (ear, war). Deben estar enumeradas en *sormas-base/dependencies/serverlibs.pom*. Usualmente para bibliotecas auxiliares que varios artefactos necesitan.
+3. **Dependencias de compilación**: Incluidas en los artefactos respectivos que necesiten la dependencia explícitamente. Por lo general, para dependencias que se necesitan singularmente en un artefacto.
+4. **Bibliotecas de prueba**: Bibliotecas utilizadas en pruebas automatizadas en uno o más módulos.
+
+Debido a la herramienta independiente de administración de builds Gradle para *sormas-app*, existe una lista redundante de dependencias de compilación en *sormas-app/app/build.gradle*.
 
 
 ### Solución de problemas de Eclipse
