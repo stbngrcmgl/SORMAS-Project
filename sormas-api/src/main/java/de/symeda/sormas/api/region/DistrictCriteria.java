@@ -19,17 +19,28 @@ package de.symeda.sormas.api.region;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class DistrictCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -1794892073657582900L;
 
+	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private String nameEpidLike;
 	private EntityRelevanceStatus relevanceStatus;
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public DistrictCriteria country(CountryReferenceDto country) {
+		this.country = country;
+
+		return this;
+	}
 
 	public DistrictCriteria region(RegionReferenceDto region) {
 		this.region = region;

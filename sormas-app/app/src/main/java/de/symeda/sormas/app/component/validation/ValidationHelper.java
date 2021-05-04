@@ -15,7 +15,11 @@ import de.symeda.sormas.app.util.ResultCallback;
 public class ValidationHelper {
 
 	public static void initDateIntervalValidator(ControlDateField dateFromControl, ControlDateField dateUntilControl) {
-		if (dateFromControl.getVisibility() == View.GONE || dateUntilControl.getVisibility() == View.GONE) {
+		initDateIntervalValidator(dateFromControl, dateUntilControl, true);
+	}
+
+	public static void initDateIntervalValidator(ControlDateField dateFromControl, ControlDateField dateUntilControl, boolean doNotSetForHiddenFields) {
+		if (doNotSetForHiddenFields && (dateFromControl.getVisibility() == View.GONE || dateUntilControl.getVisibility() == View.GONE)) {
 			return;
 		}
 

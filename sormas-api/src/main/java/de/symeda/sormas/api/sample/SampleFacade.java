@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -35,9 +37,11 @@ public interface SampleFacade {
 
 	List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, int first, int max);
+	Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
-	List<SampleExportDto> getExportList(CaseCriteria caseCriteria, int first, int max);
+	List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, Collection<String> selectedRows, int first, int max);
+
+	List<SampleExportDto> getExportList(CaseCriteria caseCriteria, Collection<String> selectedRows, int first, int max);
 
 	long count(SampleCriteria sampleCriteria);
 
@@ -55,6 +59,8 @@ public interface SampleFacade {
 
 	void deleteSample(SampleReferenceDto sampleRef);
 
+	void deleteAllSamples(List<String> sampleUuids);
+
 	void validate(SampleDto sample) throws ValidationRuntimeException;
 
 	List<String> getDeletedUuidsSince(Date since);
@@ -68,6 +74,8 @@ public interface SampleFacade {
 	Boolean isSampleEditAllowed(String sampleUuid);
 
 	List<SampleDto> getByContactUuids(List<String> contactUuids);
+
+	List<SampleDto> getSimilarSamples(SampleSimilarityCriteria criteria);
 
 	boolean exists(String uuid);
 

@@ -16,11 +16,14 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLoca
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.region.AreaFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.ContinentFacadeEjb;
 import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.region.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 
@@ -28,9 +31,15 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 public class InfrastructureFacadeEjb implements InfrastructureFacade {
 
 	@EJB
+	private ContinentFacadeEjb.ContinentFacadeEjbLocal continentFacade;
+	@EJB
+	private SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal subcontinentFacade;
+	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;
+	@EJB
+	private AreaFacadeEjb.AreaFacadeEjbLocal areaFacade;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
@@ -71,6 +80,8 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 			return sync;
 		}
 
+		sync.setContinents(continentFacade.getAllAfter(changeDates.getContinentChangeDate()));
+		sync.setSubcontinents(subcontinentFacade.getAllAfter(changeDates.getSubcontinentChangeDate()));
 		sync.setCountries(countryFacade.getAllAfter(changeDates.getCountryChangeDate()));
 		sync.setRegions(regionFacade.getAllAfter(changeDates.getRegionChangeDate()));
 		sync.setDistricts(districtFacade.getAllAfter(changeDates.getDistrictChangeDate()));
@@ -88,6 +99,7 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CAMPAIGNS)) {
 			sync.setCampaigns(campaignFacade.getAllAfter(changeDates.getCampaignChangeDate()));
 			sync.setCampaignFormMetas(campaignFormMetaFacade.getAllAfter(changeDates.getCampaignFormMetaChangeDate()));
+			sync.setAreas(areaFacade.getAllAfter(changeDates.getAreaChangeDate()));
 		}
 
 		return sync;
