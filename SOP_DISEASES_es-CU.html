@@ -1,0 +1,710 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
+    
+    
+      
+        <title>POE para agregar nuevas enfermedades a SORMAS - SORMAS Project</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.ca7ac06f.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.f1a3b89f.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#poe-para-agregar-nuevas-enfermedades-a-sormas" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="SORMAS Project" class="md-header__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SORMAS Project
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              POE para agregar nuevas enfermedades a SORMAS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/hzi-braunschweig/SORMAS-Project/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hzi-braunschweig/SORMAS-Project
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="SORMAS Project" class="md-nav__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    SORMAS Project
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/hzi-braunschweig/SORMAS-Project/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hzi-braunschweig/SORMAS-Project
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://sormas.org" class="md-nav__link">
+        Offical Website
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CONTRIBUTING.html" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DEMO_APP.html" class="md-nav__link">
+        Demo App
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sormas-rest/index.html" class="md-nav__link">
+        REST
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DEVELOPMENT_ENVIRONMENT.html" class="md-nav__link">
+        Development Environment
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sormas-cargoserver/index.html" class="md-nav__link">
+        Cargo Server
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sormas-base/doc/keycloak.html" class="md-nav__link">
+        Keycloak
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sormas-keycloak-service-provider/index.html" class="md-nav__link">
+        Keycloak Service Provider
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="I18N.html" class="md-nav__link">
+        I18n
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SECURITY.html" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SERVER_CUSTOMIZATION.html" class="md-nav__link">
+        Custimization
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SERVER_DEV_SETUP.html" class="md-nav__link">
+        Development Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SERVER_SETUP.html" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SERVER_UPDATE.html" class="md-nav__link">
+        Update
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SOP_DISEASES.html" class="md-nav__link">
+        Diseases
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ADDING_LICENSE.html" class="md-nav__link">
+        Licensing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="3RD_PARTY_ACK.html" class="md-nav__link">
+        Acknowledgements
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contenido" class="md-nav__link">
+    Contenido
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guia" class="md-nav__link">
+    Guía
+  </a>
+  
+    <nav class="md-nav" aria-label="Guía">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-1-descargar-el-diccionario-de-datos" class="md-nav__link">
+    Paso 1: Descargar el diccionario de datos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-2-definir-los-detalles-basicos-de-la-enfermedad" class="md-nav__link">
+    Paso 2: Definir los detalles básicos de la enfermedad
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-definir-campos-de-caso-existentes" class="md-nav__link">
+    Paso 3: Definir campos de caso existentes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-definir-campos-de-persona-existentes" class="md-nav__link">
+    Paso 4: Definir campos de persona existentes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-5-definir-los-sintomas-relevantes" class="md-nav__link">
+    Paso 5: Definir los síntomas relevantes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-6-definir-los-datos-epidemiologicos-relevantes" class="md-nav__link">
+    Paso 6: Definir los datos epidemiológicos relevantes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-7-definir-las-condiciones-de-salud" class="md-nav__link">
+    Paso 7: Definir las condiciones de salud
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-8-definir-nuevos-campos-en-otras-areas" class="md-nav__link">
+    Paso 8: Definir nuevos campos en otras áreas
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-9-proporcionar-criterios-de-clasificacion-de-casos" class="md-nav__link">
+    Paso 9: Proporcionar criterios de clasificación de casos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-10-proporcionar-informacion-adicional" class="md-nav__link">
+    Paso 10: Proporcionar información adicional
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-11-enviar-su-definicion-de-enfermedad-al-equipo-de-sormas" class="md-nav__link">
+    Paso 11: Enviar su definición de enfermedad al equipo de SORMAS
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/hzi-braunschweig/SORMAS-Project/edit/master/docs/SOP_DISEASES_es-CU.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="poe-para-agregar-nuevas-enfermedades-a-sormas">POE para agregar nuevas enfermedades a SORMAS</h1>
+<p>Este archivo define el POE (Procedimiento operativo estándar) que se debe seguir al solicitar que el equipo de desarrollo central agregue nuevas enfermedades al sistema. Responder a todas las preguntas de esta guía asegurará que podamos integrar nuevas enfermedades en SORMAS lo más rápido posible.</p>
+<h2 id="contenido">Contenido</h2>
+<ol>
+<li><a href="#step-1-download-the-data-dictionary">Descargar el diccionario de datos</a></li>
+<li><a href="#step-2-define-basic-disease-details">Definir los detalles básicos de la enfermedad</a></li>
+<li><a href="#step-3-define-existing-case-fields">Definir campos de caso existentes</a></li>
+<li><a href="#step-4-define-existing-person-fields">Definir campos de persona existentes</a></li>
+<li><a href="#step-5-define-the-relevant-symptoms">Definir los síntomas relevantes</a></li>
+<li><a href="#step-6-define-the-relevant-epidemiological-data">Definir los datos epidemiológicos relevantes</a></li>
+<li><a href="#step-7-define-health-conditions">Definir las condiciones de salud</a></li>
+<li><a href="#step-8-define-new-fields-in-other-areas">Definir nuevos campos en otras áreas</a></li>
+<li><a href="#step-9-provide-case-classification-criteria">Proporcionar criterios de clasificación de casos</a></li>
+<li><a href="#step-10-provide-additional-information">Proporcionar información adicional</a></li>
+<li><a href="#step-11-send-your-disease-definition-to-the-sormas-developers">Enviar su definición de enfermedad a los desarrolladores de SORMAS</a></li>
+</ol>
+<h2 id="guia">Guía</h2>
+<h3 id="paso-1-descargar-el-diccionario-de-datos">Paso 1: Descargar el diccionario de datos</h3>
+<p>Descargue el <a href="https://github.com/hzi-braunschweig/SORMAS-Project/raw/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx">Diccionario de datos</a> más reciente de este repositorio y ábralo. Nunca utilice una versión del Diccionario de datos que haya descargado anteriormente, ya que es muy probable que su contenido haya cambiado en el ínterin.</p>
+<p>Utilizará el Diccionario de datos para definir todos los detalles de la nueva enfermedad. Asegúrese de marcar cada adición o cambio (por ejemplo, coloreando el texto o el fondo de la fila en un rojo sutil) para que no perdamos la información que ha proporcionado.</p>
+<h3 id="paso-2-definir-los-detalles-basicos-de-la-enfermedad">Paso 2: Definir los detalles básicos de la enfermedad</h3>
+<p>Abra la pestaña <strong>Case</strong> del Diccionario de datos y desplácese hacia abajo hasta las tablas que tienen un fondo azul. Estas tablas definen <em>enumeraciones</em>, que son básicamente tipos de datos con valores fijos. Los ejemplos incluyen las diferentes clasificaciones de un caso, el género de una persona, o las enfermedades que se utilizan en SORMAS. Busque la tabla de enumeración <strong>Disease</strong> (consulte la columna <em>Type</em>) y agregue una nueva fila. Ingrese los siguientes detalles:</p>
+<ul>
+<li>El <strong>nombre de la enfermedad</strong> en la columna <em>Caption</em></li>
+<li>Opcionalmente, si la enfermedad tiene un nombre largo, un <strong>nombre corto o abreviatura</strong> en la columna <em>Short</em></li>
+</ul>
+<p>Utilice la columna <em>Description</em> para responder las siguientes preguntas:</p>
+<ul>
+<li>¿Tiene la enfermedad <strong>seguimiento de contactos</strong>?</li>
+<li>En caso afirmativo, ¿durante <strong>cuántos días</strong> se debe realizar el seguimiento de contactos?</li>
+</ul>
+<h3 id="paso-3-definir-campos-de-caso-existentes">Paso 3: Definir campos de caso existentes</h3>
+<p>Mire las filas en la primera tabla de la pestaña <strong>Case</strong> (que tiene un fondo gris). Esta tabla define todos los campos que se muestran en la pestaña <em>Información del caso</em> en la aplicación SORMAS. La columna <em>Caption</em> define el nombre del campo tal como se muestra en la interfaz de usuario, mientras que la columna <em>Diseases</em> especifica qué enfermedades utilizan este campo. Agregue el nombre (o, si está disponible, el nombre corto) de su nueva enfermedad en la columna "New disease" de cada fila que represente un campo que sea relevante para su nueva enfermedad y coloree.</p>
+<h3 id="paso-4-definir-campos-de-persona-existentes">Paso 4: Definir campos de persona existentes</h3>
+<p>Abra la pestaña <strong>Person</strong> y repita el paso 3 para la primera tabla que contiene los campos que definen los detalles de una persona en SORMAS.</p>
+<h3 id="paso-5-definir-los-sintomas-relevantes">Paso 5: Definir los síntomas relevantes</h3>
+<p>Abra la pestaña <strong>Symptoms</strong> que enumera todos los síntomas que se utilizan actualmente en SORMAS. Esta es una lista muy larga y tendrá que revisar cada fila y definir si este síntoma es relevante para su nueva enfermedad o no. </p>
+<p>Es posible que su nueva enfermedad tenga uno o más síntomas que actualmente no forman parte de SORMAS. En ese caso, debe agregar una nueva fila para cada uno de estos síntomas al final de la tabla y proporcionar el <strong>nombre del síntoma</strong> en la columna <em>Caption</em>.</p>
+<p>La mayoría de los síntomas en SORMAS son simples campos <em>Sí/No/Desconocido</em> donde <em>Sí</em> significa que el síntoma está presente, <em>No</em> que el síntoma no está presente, y <em>Desconocido</em> que no hay información sobre si el síntoma está presente o no. Si su síntoma puede definirse con este patrón, no tiene que especificar nada más. Sin embargo, si su síntoma es más complejo (por ejemplo, hay una serie de valores predefinidos entre los que el usuario debe elegir), proporcione todos los detalles necesarios sobre cómo los usuarios deben especificar el síntoma en la columna <em>Description</em>.</p>
+<h3 id="paso-6-definir-los-datos-epidemiologicos-relevantes">Paso 6: Definir los datos epidemiológicos relevantes</h3>
+<p>Abra la pestaña <strong>Epidemiological data</strong> que enumera todos los campos que se utilizan para recolectar información sobre los antecedentes epidemiológicos del caso, por ejemplo, si estuvo presente en entierros, tuvo contacto con un caso confirmado o con animales. Repita el paso 3 para todas las filas de la primera tabla y agregue filas nuevas si su nueva enfermedad requiere información que no se encuentra actualmente en SORMAS. Dado que es probable que los campos nuevos de esta pestaña sean más complejos que los síntomas básicos, asegúrese de definir la mayor cantidad de información posible sobre cómo deberían funcionar en la columna <em>Description</em>.</p>
+<h3 id="paso-7-definir-las-condiciones-de-salud">Paso 7: Definir las condiciones de salud</h3>
+<p>Abra la pestaña <strong>Health conditions</strong> que contiene una lista de condiciones preexistentes que no son síntomas de la enfermedad, pero siguen siendo relevantes, especialmente para la gestión de casos en un hospital. Repita el paso 3 para todas las filas de la primera tabla y agregue nuevas filas si existen condiciones de salud relevantes para su nueva enfermedad que aún no forman parte de SORMAS. Como siempre con los campos nuevos, asegúrese de proporcionar todos los detalles relevantes en la columna <em>Description</em>.</p>
+<h3 id="paso-8-definir-nuevos-campos-en-otras-areas">Paso 8: Definir nuevos campos en otras áreas</h3>
+<p>Es posible que su enfermedad requiera que se recolecte más información que aún no es compatible con SORMAS, por ejemplo, nuevos detalles sobre la persona, información específica sobre su hospitalización, o incluso campos muy importantes que debieran ir directamente a la información del caso. Puede emplear el mismo proceso que utilizó para definir nuevos campos de síntomas, condiciones de salud, o datos epidemiológicos abriendo la pestaña en cuestión y agregando nuevas filas a la primera tabla. </p>
+<hr />
+<p>En este punto, ha terminado todas las definiciones necesarias en el Diccionario de datos. Guarde su trabajo y prepare un correo electrónico con el archivo del Diccionario de datos adjunto. Sin embargo, no envíe este correo electrónico antes de seguir los pasos restantes, ya que todavía hay algunos detalles necesarios para completar la especificación de su nueva enfermedad.</p>
+<hr />
+<h3 id="paso-9-proporcionar-criterios-de-clasificacion-de-casos">Paso 9: Proporcionar criterios de clasificación de casos</h3>
+<p>De manera óptima, al definir una nueva enfermedad, también debe especificar los criterios que SORMAS debe utilizar para clasificar automáticamente el caso como sospechoso, probable o confirmado. Para hacer esto de una manera que sea compatible con el sistema que usamos, necesitará acceso a un sistema de SORMAS en ejecución (por ejemplo, el servidor experimental que puede encontrar en https://sormas.org). Inicie sesión como cualquier usuario (por ejemplo, el usuario predeterminado en el servidor experimental), abra la sección <em>About</em> en el menú principal y abra el documento <em>Case Classification Rules (HTML)</em>. Defina los criterios de clasificación de forma similar al sistema utilizado en este documento. Si está disponible, también puede enviarnos un documento oficial de la OMS o su CCE nacional que especifique los criterios de clasificación.</p>
+<h3 id="paso-10-proporcionar-informacion-adicional">Paso 10: Proporcionar información adicional</h3>
+<p>Si todavía hay cosas que son necesarias para implementar correctamente la nueva enfermedad en SORMAS (es posible que nos solicite crear un área completamente nueva para los casos, o puede haber mecánicas muy complejas que necesitan muchas más especificaciones), indíquenos tantos detalles sobre ellas como sea posible. Simplemente escriba toda esa información en su correo electrónico.</p>
+<h3 id="paso-11-enviar-su-definicion-de-enfermedad-al-equipo-de-sormas">Paso 11: Enviar su definición de enfermedad al equipo de SORMAS</h3>
+<p>Envíe su correo electrónico con el archivo actualizado del Diccionario de datos, los criterios de clasificación de casos, y sus notas adicionales a sormas@helmholtz-hzi.de. ¡Felicitaciones, su trabajo está hecho! Ahora deberíamos tener toda la información que necesitamos para integrar su enfermedad en SORMAS. Si hay algo que no está claro o si necesitamos detalles adicionales, nos pondremos en contacto con usted lo antes posible. ¡Muchas gracias por contribuir a SORMAS y ayudarnos a combatir la propagación de tantas enfermedades como sea posible!</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/hzi-braunschweig/SORMAS-Project" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": ".", "features": ["tabs"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.477d984a.min.js", "version": 0.1}</script>
+    
+    
+      <script src="assets/javascripts/bundle.82b56eb2.min.js"></script>
+      
+    
+  </body>
+</html>
