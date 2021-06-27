@@ -37,8 +37,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
-import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +67,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -87,8 +86,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private DiseaseVariantService diseaseVariantService;
-	@EJB
 	private FacilityService facilityService;
 	@EJB
 	private UserService userService;
@@ -96,8 +93,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
-	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -150,6 +145,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return sampleService.getByUuid(sampleRef.getUuid())
 			.getPathogenTests()
 			.stream()
+			.filter(p -> !p.isDeleted())
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
 	}
@@ -315,7 +311,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getTestedDiseaseVariant()));
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
@@ -347,13 +343,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	private void pseudonymizeDto(PathogenTest source, PathogenTestDto target, Pseudonymizer pseudonymizer) {
 		if (source != null && target != null) {
-			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, sampleJurisdictionChecker.isInJurisdictionOrOwned(source.getSample()), null);
+			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, sampleService.inJurisdictionOrOwned(source.getSample()).getInJurisdiction(), null);
 		}
 	}
 
 	private void restorePseudonymizedDto(PathogenTestDto dto, PathogenTest existingSampleTest, PathogenTestDto existingSampleTestDto) {
 		if (existingSampleTestDto != null) {
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(existingSampleTest.getSample());
+			boolean isInJurisdiction = sampleService.inJurisdictionOrOwned(existingSampleTest.getSample()).getInJurisdiction();
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 			pseudonymizer.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);
@@ -366,7 +362,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(diseaseVariantService.getByReferenceDto(source.getTestedDiseaseVariant()));
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
@@ -400,17 +396,23 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		Disease disease = null;
 
 		if (caze != null) {
-			final Region region = caze.getRegion();
 			disease = caze.getDisease();
-			messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR));
+			messageRecipients.addAll(
+				userService.getAllByRegionsAndUserRoles(
+					JurisdictionHelper.getCaseRegions(caze),
+					UserRole.SURVEILLANCE_SUPERVISOR,
+					UserRole.CASE_SUPERVISOR));
 
 		}
 
 		if (contact != null) {
-			final Region region = contact.getRegion() != null ? contact.getRegion() : contact.getCaze().getRegion();
 			disease = contact.getDisease() != null ? contact.getDisease() : contact.getCaze().getDisease();
 			messageRecipients.addAll(
-				userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR)
+				userService
+					.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getContactRegions(contact),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR)
 					.stream()
 					.filter(user -> !messageRecipients.contains(user))
 					.collect(Collectors.toList()));
